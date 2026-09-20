@@ -1,0 +1,76 @@
+generated: '2026-09-19'
+method: probed
+status: published
+source: https://legit.gonna.bond/mcp
+docs: https://legit.gonna.bond/llms.txt
+summary: >-
+  LEGIT operates ONE remote MCP server at https://legit.gonna.bond/mcp: stateless JSON-RPC 2.0 over HTTP
+  POST, no session, no authentication. An anonymous initialize answered protocolVersion 2024-11-05 with
+  serverInfo {name legit, version 1.0.0} and capabilities {tools: {}} (no resources, no prompts); an
+  anonymous tools/list answered four tools, each with a JSON Schema inputSchema and additionalProperties
+  false. The llms.txt gives the client config {"mcpServers": {"legit": {"url": "https://legit.gonna.bond/mcp"}}}.
+  A plain GET on the endpoint returns a self-description naming the four tools. No stdio package, npx/uvx
+  install or source repository is published.
+deployment:
+  mode: remote
+  endpoint: https://legit.gonna.bond/mcp
+  auth: none
+  verified: probed
+  note: >-
+    Hosted HTTPS endpoint an MCP client POSTs to directly; tools/list and initialize both succeeded with no
+    credential. The Accept header "application/json, text/event-stream" was sent and the server answered
+    plain application/json (no SSE). Whether tools/call on compare_merchants triggers an x402 402 challenge
+    the way the REST /v1/compare does was NOT tested — no tool was invoked and nothing was paid.
+servers:
+- id: legit
+  name: legit
+  endpoint: https://legit.gonna.bond/mcp
+  transport: http
+  auth: none
+  status: live
+  probe:
+    method: 'POST initialize, POST tools/list, GET'
+    http_status: 200
+    protocol_version: '2024-11-05'
+    server_version: 1.0.0
+    fetched: '2026-09-19'
+    tools_file: mcp/gonna-bond-mcp-tools.json
+  scope: Merchant trust checks, comparisons, leaderboard and badge URLs for the x402 agentic economy.
+  tools:
+  - name: check_trust
+    description: >-
+      Trust report for one merchant: 0-100 score, letter grade, uptime, median latency and a plain-English
+      explanation. Accepts Algorand, EVM or Solana addresses, or an https URL.
+    input_schema:
+      address: string (required) — merchant address (Algorand / EVM / Solana) or https URL
+    read_only: true
+    source_operation: openapi/gonna-bond-legit-openapi.yml#check_v1_check__address__get
+  - name: compare_merchants
+    description: >-
+      Head-to-head trust comparison of 2-5 merchant addresses. Returns the winner address and a one-sentence
+      rationale.
+    input_schema:
+      addresses: array of string, minItems 2, maxItems 5 (required)
+    read_only: true
+    source_operation: openapi/gonna-bond-legit-openapi.yml#compare_v1_compare_get
+    note: The backing REST operation is paid per call over x402; see deployment.note.
+  - name: leaderboard
+    description: >-
+      Top merchants by trust score, optionally filtered to one network (e.g. base-mainnet, algorand-mainnet,
+      solana-mainnet).
+    input_schema:
+      network: string (optional) — exact-match network filter
+      limit: integer 1-50, default 10 (optional)
+    read_only: true
+    source_operation: openapi/gonna-bond-legit-openapi.yml#leaderboard_v1_leaderboard_get
+  - name: get_badge_url
+    description: >-
+      Embeddable LEGIT trust-badge SVG URL for a merchant, plus a ready-to-paste HTML snippet for the
+      merchant's site.
+    input_schema:
+      address: string (required) — merchant address (Algorand / EVM / Solana) or https URL
+    read_only: true
+    source_operation: null
+    note: >-
+      Wraps GET /v1/badge/{address}.svg, which is served (probed 200, image/svg+xml, 662 bytes) but is not
+      in the provider's OpenAPI.

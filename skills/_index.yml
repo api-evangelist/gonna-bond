@@ -1,0 +1,21 @@
+generated: '2026-09-19'
+method: generated
+source: >-
+  Authored by API Evangelist from openapi/gonna-bond-legit-openapi.yml (every operationId verified against
+  the spec), conventions/gonna-bond-conventions.yml, errors/gonna-bond-problem-types.yml,
+  authentication/gonna-bond-authentication.yml and asyncapi/gonna-bond-watch-webhooks.yml. The provider
+  publishes no skills, AGENTS.md or SKILL.md of its own (probed /skills and /AGENTS.md on
+  legit.gonna.bond, both 404, 2026-09-19).
+skills:
+- file: gonna-bond-pre-payment-trust-check.md
+  name: Pre-payment trust check
+  api: openapi/gonna-bond-legit-openapi.yml
+  operations: [check_v1_check__address__get, report_v1_report__address__get, batch_check_v1_batch_check_post, route_v1_route_get, networks_v1_networks_get]
+- file: gonna-bond-pay-per-call-x402.md
+  name: Pay for a LEGIT verdict over x402
+  api: openapi/gonna-bond-legit-openapi.yml
+  operations: [compare_v1_compare_get, arena_v1_arena_get, history_v1_history_get, deep_check_v1_deep_check_post, create_watch_v1_watch_post]
+- file: gonna-bond-watch-sentinel.md
+  name: Watch a merchant with a webhook-armed sentinel
+  api: openapi/gonna-bond-legit-openapi.yml
+  operations: [create_watch_v1_watch_post, watch_status_v1_watches__watch_id__get, watch_events_v1_watches__watch_id__events_get]

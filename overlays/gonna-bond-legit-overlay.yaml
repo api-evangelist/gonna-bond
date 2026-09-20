@@ -1,0 +1,51 @@
+overlay: 1.0.0
+info:
+  title: API Evangelist enhancements for the LEGIT Trust API
+  version: 1.0.0
+  description: >-
+    Overlay applied by API Evangelist on top of the provider's OpenAPI (fetched verbatim from
+    https://legit.gonna.bond/openapi.json on 2026-09-19). The provider document declares no servers[] and
+    no tags; this overlay supplies the base URL the provider's own llms.txt examples use, groups the 24
+    operations into tags, and marks the five x402-paid operations. The original is never mutated.
+extends: openapi/gonna-bond-legit-openapi.yml
+actions:
+- target: $
+  update:
+    servers:
+    - url: https://legit.gonna.bond
+      description: Production (the host every example in https://legit.gonna.bond/llms.txt calls)
+    tags:
+    - {name: Trust, description: Trust reports, batch checks and history for one or more merchant addresses}
+    - {name: Discovery, description: Leaderboard, routing, trending, identity and network health}
+    - {name: Arena, description: The 24h cross-chain settlement benchmark}
+    - {name: Watch, description: Watch sentinels and their event feeds}
+    - {name: Meta, description: Liveness, stats, discovery and referee documents}
+    externalDocs: {description: Watch webhooks and events, url: https://legit.gonna.bond/docs}
+- target: $.info
+  update:
+    x-apievangelist-provenance: {fetched: '2026-09-19', source: https://legit.gonna.bond/openapi.json, repo: https://github.com/api-evangelist/gonna-bond}
+    x-apievangelist-notes: 'Paid operations are authenticated by payment, not identity — see authentication/gonna-bond-authentication.yml and the x402 flow in conventions/gonna-bond-conventions.yml.'
+- {target: "$.paths['/v1/check/{address}'].get", update: {tags: [Trust]}}
+- {target: "$.paths['/v1/report/{address}'].get", update: {tags: [Trust]}}
+- {target: "$.paths['/v1/batch-check'].post", update: {tags: [Trust]}}
+- {target: "$.paths['/v1/deep-check'].post", update: {tags: [Trust], x-x402-paid: true}}
+- {target: "$.paths['/v1/compare'].get", update: {tags: [Trust], x-x402-paid: true}}
+- {target: "$.paths['/v1/history'].get", update: {tags: [Trust], x-x402-paid: true}}
+- {target: "$.paths['/v1/receipts'].get", update: {tags: [Trust]}}
+- {target: "$.paths['/v1/leaderboard'].get", update: {tags: [Discovery]}}
+- {target: "$.paths['/v1/route'].get", update: {tags: [Discovery]}}
+- {target: "$.paths['/v1/trending'].get", update: {tags: [Discovery]}}
+- {target: "$.paths['/v1/pulse'].get", update: {tags: [Discovery]}}
+- {target: "$.paths['/v1/networks'].get", update: {tags: [Discovery]}}
+- {target: "$.paths['/v1/chain-logos'].get", update: {tags: [Discovery]}}
+- {target: "$.paths['/v1/merchant/{address}/identity'].get", update: {tags: [Discovery]}}
+- {target: "$.paths['/v1/arena'].get", update: {tags: [Arena], x-x402-paid: true}}
+- {target: "$.paths['/v1/arena/preview'].get", update: {tags: [Arena]}}
+- {target: "$.paths['/v1/watch'].post", update: {tags: [Watch], x-x402-paid: true}}
+- {target: "$.paths['/v1/watches/{watch_id}'].get", update: {tags: [Watch]}}
+- {target: "$.paths['/v1/watches/{watch_id}/events'].get", update: {tags: [Watch]}}
+- {target: "$.paths['/health'].get", update: {tags: [Meta]}}
+- {target: "$.paths['/v1/stats'].get", update: {tags: [Meta]}}
+- {target: "$.paths['/.well-known/legit'].get", update: {tags: [Meta]}}
+- {target: "$.paths['/v1/referee'].get", update: {tags: [Meta]}}
+- {target: "$.paths['/v1/referee/reproduce.py'].get", update: {tags: [Meta]}}

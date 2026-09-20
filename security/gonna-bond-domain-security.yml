@@ -1,0 +1,21 @@
+generated: '2026-09-19'
+method: probed
+source: live DNS/TLS/HTTP probes of apis.yml + OpenAPI hosts
+hosts:
+- host: gonna.bond
+  https: true
+  tls_version: TLSv1.3
+  cert_expires: Feb  7 13:19:43 2027 GMT
+  hsts: false
+- host: legit.gonna.bond
+  https: true
+  tls_version: TLSv1.3
+  cert_expires: Nov  2 22:29:55 2026 GMT
+  hsts: null
+domains:
+- domain: gonna.bond
+  dnssec: false
+  caa: []
+  spf: true
+  dmarc: true
+  dmarc_policy: none

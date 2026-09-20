@@ -1,0 +1,134 @@
+generated: '2026-09-19'
+method: searched
+source: >-
+  https://legit.gonna.bond/llms.txt, https://legit.gonna.bond/docs, the operation descriptions and parameter
+  descriptions in openapi/gonna-bond-legit-openapi.yml (fetched from https://legit.gonna.bond/openapi.json),
+  the agent card's authentication block, and live unauthenticated responses observed 2026-09-19 (200 on
+  /v1/leaderboard and /v1/check/{address}, 402 on /v1/compare, 404 on /v1/nope).
+description: >-
+  How the LEGIT Trust API behaves across every operation: no authentication and per-call x402 payment in
+  place of it, no idempotency mechanism, page-number pagination on the leaderboard only, a payload-diet
+  `view` switch, the FastAPI error envelope, no rate-limit signaling, and a single write surface (the watch
+  sentinel) that cannot be reversed but expires on its own.
+
+base_url: https://legit.gonna.bond
+api_style: REST over HTTPS, JSON requests and responses, path-versioned under /v1
+
+authentication:
+  scheme: none for free operations; x402 v2 payment challenge for the five paid operations
+  key_types: []
+  docs: https://legit.gonna.bond/llms.txt
+  detail: authentication/gonna-bond-authentication.yml
+
+payments:
+  protocol: x402 v2
+  challenge: 'HTTP 402 with an x402 PaymentRequired JSON body ({x402Version: 2, error, resource, accepts[], extensions}) and the same document base64-encoded in a PAYMENT-REQUIRED response header; Cache-Control: no-store'
+  retry: Repeat the identical request with a PAYMENT-SIGNATURE request header carrying the payment payload for one of the accepts[] offers; PAYMENT-RESPONSE is exposed to browsers via Access-Control-Expose-Headers.
+  rails: [algorand-mainnet 0.004 USDC per call via facilitator.goplausible.xyz, 'base-mainnet (eip155:8453) 0.005 USDC per call via facilitator.payai.network']
+  offer_timeout: maxTimeoutSeconds 300
+  paid_operations: [compare_v1_compare_get, arena_v1_arena_get, history_v1_history_get, create_watch_v1_watch_post, deep_check_v1_deep_check_post]
+  spec_marker: 'each paid operation carries x-payment-info {price: {mode: fixed, currency: USD, amount: "0.004"}, protocols: [{x402: {}}]}'
+  bazaar: 'The 402 body''s extensions.bazaar block carries input, inputSchema and an output example + schema so "a paying agent can shape the call from the payment challenge alone"; the docs say to read the bazaar block to pay and the OpenAPI to integrate (the two are generated from one registry).'
+  detail: plans/gonna-bond-plans-pricing.yml
+
+idempotency:
+  supported: false
+  coverage: none
+  mechanism: null
+  applies_to: null
+  scope: []
+  docs: null
+  detail: >-
+    No Idempotency-Key header, request-id replay or natural-key dedup is documented anywhere. The only
+    state-creating operation, POST /v1/watch, creates a new paid sentinel on every call; retrying a request
+    whose response was lost creates (and charges for) a second watch. Webhook events are deduplicated by
+    merchant state on the provider side, which is unrelated to request idempotency.
+
+pagination:
+  style: page-number
+  applies_to: [leaderboard_v1_leaderboard_get]
+  request_params:
+    page: '1-based server page (optional; when page and/or size are given the response becomes the paged shape)'
+    size: 'one of 25, 50, 100 (default 50 when paging)'
+  response_fields:
+    generated_at: ISO-8601 UTC timestamp
+    total: total entries after filtering
+    page: page number
+    size: page size
+    entries: array of LeaderboardEntry, ranks kept global ("sliced AFTER the global rank/filter logic")
+  unpaged_default: Without page/size the leaderboard returns every scored merchant in one body (2.58 MB on 2026-09-19).
+  other_lists: /v1/trending, /v1/watches/{watch_id}/events (newest first, hard cap 200) and /v1/receipts are unpaginated.
+  docs: openapi/gonna-bond-legit-openapi.yml#leaderboard_v1_leaderboard_get
+
+field_expansion:
+  supported: false
+  sparse_fields: 'view=trimmed on GET /v1/leaderboard omits null-valued optional fields ("additive contract: absent instead of null"); the default keeps the full shape'
+
+filtering:
+  leaderboard: 'network (exact slug), q (search), include_testnet (default false), include_dormant (default false)'
+  trending: 'include_testnet, include_dormant'
+  arena: 'network narrows the paid benchmark to one chain'
+
+metadata:
+  supported: false
+
+request_tracing:
+  request_id_header: null
+  observed: 'x-railway-request-id and x-hikari-trace response headers from the Railway edge; not documented by the provider and not a request-correlation contract'
+
+caching:
+  observed: 'Cache-Control: public, max-age=30 on /v1/leaderboard; public, max-age=3600 on the agent card; no-store on 402 challenges'
+
+versioning:
+  scheme: uri-path
+  current: v1
+  api_version: 0.1.0
+  detail: lifecycle/gonna-bond-lifecycle.yml
+  note: Descriptions in the spec reference internal "Wave" numbers (Wave 1, Wave 18, Wave 41c) for additive changes; there is no public changelog.
+
+error_envelope:
+  media_type: application/json
+  shape: '{"detail": string | ValidationError[]} (FastAPI); 402 bodies are x402 PaymentRequired documents instead'
+  problem_json: false
+  statuses: [402, 404, 422]
+  detail: errors/gonna-bond-problem-types.yml
+  honesty_rule: '"an honest 404, never an invented series" — /v1/history and /v1/receipts 404 for untracked addresses rather than returning empty data; untracked addresses in /v1/compare are reported with score=null and cannot win.'
+
+rate_limits:
+  documented: false
+  headers: []
+  detail: rate-limits/gonna-bond-rate-limits.yml
+
+dry_run:
+  supported: false
+  grade: none
+  note: >-
+    No dry-run or test mode exists for the write surface (POST /v1/watch charges and creates on every call).
+    A separate opt-in `demo=true` query flag on GET /v1/report/{address} and POST /v1/batch-check returns
+    fabricated illustration data for five hardcoded demo addresses, always flagged demo=true ("fabricated
+    data is never served unmarked") — a read-side demo mode, not a rehearsal of a write. See
+    sandbox/gonna-bond-sandbox.yml.
+
+reversibility:
+  grade: none
+  write_surface:
+  - operation: create_watch_v1_watch_post
+    effect: Creates a paid 7- or 30-day watch sentinel on one merchant and may arm a webhook URL.
+    reversal_operation: null
+    window: null
+    expiry: 'The sentinel expires on its own after its `days` tier (7 or 30; 30 is the default) and is garbage-collected LEGIT_WATCH_GC_DAYS (default 7) past expiry — https://legit.gonna.bond/docs'
+    note: No DELETE /v1/watches/{watch_id}, cancel or disarm operation exists in the spec or the docs; a mistaken watch runs to expiry.
+  - operation: deep_check_v1_deep_check_post
+    effect: Paid computation; creates no server-side state.
+    reversal_operation: null
+  - operation: batch_check_v1_batch_check_post
+    effect: Free computation; creates no server-side state.
+    reversal_operation: null
+  payments: 'x402 payments settle on-chain in USDC; no refund, void or dispute path is documented for a paid call.'
+  note: >-
+    A reversal path would be `documented`; a reversal path with a stated window `verified`. LEGIT publishes
+    neither, so the grade is none. The time-bounded expiry is a lifetime, not a reversal, and is recorded
+    here only so an agent knows the blast radius of a mistaken watch is at most 30 days.
+
+webhooks:
+  detail: asyncapi/gonna-bond-watch-webhooks.yml

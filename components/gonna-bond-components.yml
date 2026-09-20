@@ -1,0 +1,31 @@
+generated: '2026-09-19'
+method: searched
+source: https://legit.gonna.bond/llms.txt
+description: >-
+  LEGIT publishes one embeddable client-side surface: a trust badge rendered as SVG per merchant address,
+  meant for a merchant's own site. It is a plain image URL (no loader script, no web component); the MCP
+  tool get_badge_url composes the same snippet server-side. The badge endpoint is served (probed 200,
+  image/svg+xml, 662 bytes on 2026-09-19) but is not in the OpenAPI.
+families:
+- family: Trust badge
+  kind: hosted SVG image
+  components:
+  - name: LEGIT trust badge
+    url_pattern: https://legit.gonna.bond/v1/badge/{address}.svg
+    embed: '<a href="https://legit.gonna.bond/merchant/{address}"><img src="https://legit.gonna.bond/v1/badge/{address}.svg" alt="LEGIT Trust Score"></a>'
+    behaviour: '"Embeddable SVG trust badge for one merchant address (never 404s)" — agent card skill `badge`'
+    loader: none
+    mcp_tool: get_badge_url
+    sources: [https://legit.gonna.bond/llms.txt, https://legit.gonna.bond/.well-known/agent.json]
+    observed:
+      url: https://legit.gonna.bond/v1/badge/G7V7U7H6IYRP7BIZO2KV6ODGQPESMMRDCWBYT3GIMNHTNK3VCKWSSKD55A.svg
+      http_status: 200
+      content_type: image/svg+xml
+hosted_pages:
+- name: Merchant dossier
+  url_pattern: https://legit.gonna.bond/merchant/{address}
+  note: Human-readable trust dossier named in llms.txt; the sample (untracked) address returned an HTML 404 on 2026-09-19.
+- name: Per-chain roster
+  url_pattern: https://legit.gonna.bond/chain/{network}
+  note: https://legit.gonna.bond/chain/base-mainnet returned 200 (94,489 bytes) on 2026-09-19.
+loader_libraries: []

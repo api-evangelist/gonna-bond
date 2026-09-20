@@ -1,0 +1,147 @@
+generated: '2026-09-19'
+method: probed
+source: https://legit.gonna.bond/.well-known/agent-card.json
+card:
+  file: a2a/gonna-bond-agent-card.json
+discovery:
+  path: /.well-known/agent-card.json
+  canonical: true
+  host: legit.gonna.bond
+  note: >-
+    Served from the LEGIT product host, not the company apex. gonna.bond and www.gonna.bond return a
+    LiteSpeed HTML 404 for both /.well-known/agent-card.json and /.well-known/agent.json (1,251 bytes,
+    "The resource requested could not be found on this server!"), so the apex serves no card at all.
+    legit.gonna.bond serves the same 4,173-byte body at the canonical path and at the legacy
+    /.well-known/agent.json; the provider's own llms.txt and robots.txt both advertise the legacy path as
+    "A2A agent card". A negative control on the same host (/.well-known/openid-configuration) returns a
+    22-byte JSON 404 ({"detail":"Not Found"}), so the 200 is a served document, not a catch-all.
+    Ownership is not in question: legit.gonna.bond is a subdomain of the company's registrable domain, the
+    card's provider.organization is "GONNA", the OpenAPI on the same host names contact GONNA /
+    legit@gonna.bond with contact.url https://gonna.bond/gonnaverse/, and the security.txt Contact points at
+    the same GONNAVERSE page.
+conformance:
+  spec: A2A 1.0.0
+  grade: flavored
+  protocol_version: null
+  preferred_transport: null
+  deviations:
+  - no-protocolVersion
+  - no-preferredTransport
+  - no-defaultInputModes
+  - no-defaultOutputModes
+  - authentication-object-instead-of-securitySchemes
+  - no-a2a-task-endpoint
+  - skills-declare-rest-paths
+  note: >-
+    capabilities is an object and skills is an array, but the card declares no protocolVersion, which is a
+    hard check, so it grades flavored. The shape is pre-0.3 (an `authentication.schemes` block rather than
+    securitySchemes/security) and the card's url is the site root https://legit.gonna.bond/ rather than a
+    JSON-RPC or HTTP+JSON A2A endpoint. Each skill carries a `url` that is a REST path from the OpenAPI
+    (plus one for /mcp) and `examples` that are curl-shaped calls, so the document functions as an
+    agent-discovery index over the REST and MCP surfaces in AgentCard clothing. No A2A message/send or
+    tasks/get responder was found or probed, because the card names none.
+x-evidence:
+  fetched: '2026-09-19'
+  url: https://legit.gonna.bond/.well-known/agent-card.json
+  http_status: 200
+  content_type: application/json
+  body_bytes: 4173
+  body_parses_as: JSON object with AgentCard shape (name, url, version, capabilities, skills, provider, iconUrl, authentication)
+  corroborating_probes:
+  - url: https://legit.gonna.bond/.well-known/agent.json
+    http_status: 200
+    note: Same 4,173-byte body as the canonical path; this is the URL a2aregistry.org lists.
+  - url: https://gonna.bond/.well-known/agent-card.json
+    http_status: 404
+  - url: https://gonna.bond/.well-known/agent.json
+    http_status: 404
+  - url: https://www.gonna.bond/.well-known/agent-card.json
+    http_status: 404
+  - url: https://www.gonna.bond/.well-known/agent.json
+    http_status: 404
+  - url: https://legit.gonna.bond/.well-known/openid-configuration
+    http_status: 404
+    note: Negative control on the serving host — a real JSON 404, not an SPA shell.
+  - url: https://a2aregistry.org
+    note: >-
+      The card was first seen as one of 415 agents listed on a2aregistry.org (fetched 2026-09-19, author
+      "GONNA", agent "LEGIT"), which is how this provider entered the harvest backlog. The registry listing
+      was the lead; the card above was fetched directly from the provider's host.
+agent_card:
+  name: LEGIT
+  description: >-
+    LEGIT is the trust oracle for the x402 agentic economy: trust-check any merchant address across 20
+    chains before routing a payment. Grades and scores come from live measurements, not self-reported data.
+    Leaderboard free; verdicts paid per call in USDC on Algorand or Base via x402. Created by GONNA.
+  url: https://legit.gonna.bond/
+  icon_url: https://legit.gonna.bond/favicon.png
+  version: 0.1.0
+  protocol_version: null
+  preferred_transport: null
+  provider:
+    organization: GONNA
+    url: null
+  capabilities:
+    streaming: false
+    push_notifications: false
+  default_input_modes: null
+  default_output_modes: null
+  security_schemes: null
+  authentication:
+    schemes: [x402]
+    note: >-
+      Free endpoints need no authentication. The paid endpoints (/v1/compare, /v1/arena, /v1/history,
+      /v1/watch, /v1/deep-check) answer 402 with an x402 PaymentRequired document listing USDC offers per
+      rail; pay on one rail and retry with the PAYMENT-SIGNATURE header. No accounts, no API keys.
+  skill_count: 10
+  skills:
+  - id: check_trust
+    name: Check merchant trust
+    url: '/v1/check/{address}'
+    tags: ["trust", "score", "merchant"]
+    paid: false
+  - id: compare
+    name: Compare merchants
+    url: '/v1/compare'
+    tags: ["trust", "compare", "verdict"]
+    paid: true
+  - id: arena
+    name: Cross-chain settlement arena
+    url: '/v1/arena'
+    tags: ["x402", "chains", "benchmark"]
+    paid: true
+  - id: history
+    name: Merchant trust history
+    url: '/v1/history'
+    tags: ["trust", "history", "trend"]
+    paid: true
+  - id: watch
+    name: Watch a merchant
+    url: '/v1/watch'
+    tags: ["trust", "monitoring", "alerts"]
+    paid: true
+  - id: deep_check
+    name: Deep-check merchants in bulk
+    url: '/v1/deep-check'
+    tags: ["trust", "due-diligence", "bulk"]
+    paid: true
+  - id: leaderboard
+    name: Merchant leaderboard
+    url: '/v1/leaderboard'
+    tags: ["trust", "ranking", "discovery"]
+    paid: false
+  - id: route
+    name: Route a payment need
+    url: '/v1/route'
+    tags: ["routing", "payments"]
+    paid: false
+  - id: badge
+    name: Trust badge
+    url: '/v1/badge/{address}.svg'
+    tags: ["badge", "embed"]
+    paid: false
+  - id: mcp
+    name: MCP endpoint
+    url: '/mcp'
+    tags: ["mcp", "tools"]
+    paid: false

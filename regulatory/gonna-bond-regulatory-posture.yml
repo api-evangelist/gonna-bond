@@ -1,0 +1,17 @@
+generated: '2026-09-19'
+method: searched
+probe: true
+source: >-
+  Harvest of the horizontal regulatory signals from the artifacts gathered this run (well-known/ security.txt,
+  security/ vulnerability disclosure, lifecycle/, conformance/) and live probes of the conventional paths on
+  legit.gonna.bond and gonna.bond on 2026-09-19. Nothing was inferred; every signal absent below was looked
+  for and not found.
+signals: {}
+probes:
+- {host: legit.gonna.bond, paths: [/accessibility, /accessibility/vpat, /legal/subprocessors, /legal/dpa, /privacy/requests, /transparency, /security/sbom, /docs/data-residency, /ai/transparency, /legal/report-content, /security, /legal, /terms, /privacy], status: 404}
+- {host: gonna.bond, paths: [/accessibility, /accessibility/vpat, /legal/subprocessors, /legal/dpa, /privacy/requests, /transparency, /security/sbom, /docs/data-residency, /ai/transparency, /legal/report-content, /security, /legal, /terms, /privacy], status: 404}
+notes:
+- No terms of service, privacy policy, DPA, subprocessor list, accessibility statement, SBOM, transparency report or data-residency statement is published on either host.
+- security.txt exists (RFC 9116) but its Policy field points at the product homepage, so it carries no disclosure policy substance.
+- The docs state the service retains measurements for 14 days (GET /v1/stats) and deletes watches 7 days after expiry, which is operational lifetime information, not a support-lifetime commitment; no stated_period is recorded.
+- robots.txt explicitly allows GPTBot, ChatGPT-User, ClaudeBot, Claude-User, PerplexityBot and Google-Extended ("AI crawlers are explicitly welcome"); this is a crawler-consent statement, not one of the regulatory signals in the vocabulary, and is recorded here only so the next pass does not re-hunt it.

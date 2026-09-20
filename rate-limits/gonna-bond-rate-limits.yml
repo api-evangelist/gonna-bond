@@ -1,0 +1,20 @@
+generated: '2026-09-19'
+method: probed
+source: >-
+  Searched https://legit.gonna.bond/llms.txt, /docs, /openapi.json, /.well-known/legit and the agent card
+  for published limits; observed the response headers of live unauthenticated calls on 2026-09-19 — GET
+  /v1/leaderboard (200), GET /v1/check/{address} (200), GET /v1/compare (402), GET /v1/nope (404).
+limit_count: 0
+limits: []
+headers:
+  observed: []
+  note: >-
+    No RateLimit-*, X-RateLimit-* or Retry-After header appeared on any response. The only per-response
+    signals are Cache-Control (public, max-age=30 on the leaderboard; max-age=3600 on the agent card;
+    no-store on the 402) and the platform edge's x-railway-request-id.
+exhaustion_status: null
+notes:
+- The provider documents no client-side rate limit and declares no 429 in the OpenAPI.
+- /.well-known/legit publishes a `probing` policy with `daily_budget: 20000` and per-tier intervals; that is LEGIT's own outbound measurement budget toward the merchants it scores, not a limit on API callers.
+- Paid operations are throttled by price rather than by rate: each call costs $0.004-$0.005 in USDC over x402.
+- Webhook deliveries to an integrator's endpoint use a 5-second timeout and are never retried (https://legit.gonna.bond/docs).

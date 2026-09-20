@@ -1,23 +1,210 @@
 aid: gonna-bond
 name: GONNA
-description: 'GONNA is a company surfaced via the API Evangelist harvest backlog (source: a2a-registry)
-  and added to the network as a stub for full-pipeline profiling.'
+description: >-
+  GONNA is an Algorand-native meme-coin and games community ($GONNA, Algorand ASA 2582294183; the "GONNAVERSE"
+  at gonna.bond) that builds and operates LEGIT, a trust oracle for the x402 agentic economy at
+  legit.gonna.bond. LEGIT trust-checks any x402 merchant or agent address across Algorand, Base, Solana and
+  17 other chains before a payment is routed: grades (A+ to F) and scores (0-100) are built from live
+  uptime, latency and payment-coherence probes rather than self-reported data. The surface is exposed three
+  ways from one host: a 24-operation OpenAPI 3.1.0 REST contract at https://legit.gonna.bond/openapi.json
+  (free reads; five verdict endpoints paid per call in USDC over x402, $0.004 on Algorand / $0.005 on Base,
+  no accounts or API keys), a remote MCP server at https://legit.gonna.bond/mcp answering an anonymous
+  tools/list with four tools, and an A2A-style agent card at /.well-known/agent.json and
+  /.well-known/agent-card.json. The apex site gonna.bond is a JavaScript-rendered community page with no
+  API surface of its own.
 url: https://raw.githubusercontent.com/api-evangelist/gonna-bond/refs/heads/main/apis.yml
+image: https://legit.gonna.bond/favicon.png
 x-type: company
 x-source: harvest:a2a-registry
-x-tier: stub
-x-tier-reason: harvest
+x-tier: profiled
+x-tier-reason: enrichment pass 2026-09-19 (local-v3; was a2a-registry harvest stub)
 specificationVersion: '0.20'
 created: '2026-09-19'
 modified: '2026-09-19'
 tags:
 - Company
-apis: []
+- Agents
+- Agent Commerce
+- x402
+- Trust
+- Merchant Trust
+- MCP
+- A2A
+- Algorand
+- Blockchain
+- Payments
+- agent-native
+tags_raw:
+- Company
+- Agents
+- Agent commerce
+- x402
+- Trust
+- Merchant trust
+- MCP
+- A2A
+- Algorand
+- Blockchain
+- Payments
+- Agent-native
+apis:
+- aid: gonna-bond:legit-trust-api
+  name: LEGIT Trust API
+  description: >-
+    REST API for the LEGIT trust oracle: trust-check one x402 merchant address (score, grade, uptime, latency,
+    explanation), pull a deep report with 30-day history and percentile, batch-check up to 20 addresses,
+    get a best-merchant routing recommendation for a stated need, resolve on-chain merchant identity, read
+    the ranked leaderboard, trending merchants, per-chain network health, receipts and the live network
+    pulse. Five verdict endpoints (compare, arena, history, watch, deep-check) answer HTTP 402 with an x402
+    v2 PaymentRequired document and are paid per call in USDC (algorand-mainnet $0.004, base-mainnet $0.005);
+    everything else is free with no authentication. 24 operations across 24 paths, published as OpenAPI
+    3.1.0 at https://legit.gonna.bond/openapi.json; the spec declares no servers[] and the base URL is the
+    host the provider's own llms.txt examples call.
+  humanURL: https://legit.gonna.bond/docs
+  baseURL: https://legit.gonna.bond
+  tags:
+  - Trust
+  - Merchant Trust
+  - x402
+  - Agent Commerce
+  - Payments
+  - Webhooks
+  properties:
+  - type: OpenAPI
+    url: openapi/gonna-bond-legit-openapi.yml
+  - type: OpenAPI
+    name: LEGIT OpenAPI 3.1.0 (provider-hosted)
+    url: https://legit.gonna.bond/openapi.json
+  - type: Documentation
+    url: https://legit.gonna.bond/docs
+  - type: APIReference
+    url: https://legit.gonna.bond/openapi.json
+  - type: LLMsTxt
+    url: llms/gonna-bond-llms.txt
+  - type: Webhooks
+    url: asyncapi/gonna-bond-watch-webhooks.yml
+  - type: Overlay
+    url: overlays/gonna-bond-legit-overlay.yaml
+  - type: X-X402Discovery
+    url: https://legit.gonna.bond/.well-known/x402
+- aid: gonna-bond:legit-mcp-server
+  name: LEGIT MCP Server
+  description: >-
+    Remote Model Context Protocol server at https://legit.gonna.bond/mcp (stateless JSON-RPC 2.0 over HTTP
+    POST; initialize reports protocolVersion 2024-11-05, serverInfo legit 1.0.0, capabilities tools only).
+    tools/list answers anonymously with four tools carrying real inputSchema: check_trust, compare_merchants,
+    leaderboard and get_badge_url. No authentication, no API keys; a GET on the endpoint returns a
+    self-description naming the four tools and pointing at llms.txt for the client config.
+  humanURL: https://legit.gonna.bond/llms.txt
+  baseURL: https://legit.gonna.bond/mcp
+  tags:
+  - MCP
+  - agent-native
+  - Trust
+  properties:
+  - type: MCPServer
+    url: mcp/gonna-bond-mcp.yml
+  - type: MCPServer
+    name: LEGIT MCP endpoint (JSON-RPC 2.0 over HTTP POST)
+    url: https://legit.gonna.bond/mcp
+  - type: ToolCrosswalk
+    url: mcp/gonna-bond-tool-crosswalk.yml
+- aid: gonna-bond:legit-a2a-agent
+  name: LEGIT A2A Agent Card
+  description: >-
+    Agent card served from https://legit.gonna.bond/.well-known/agent.json and, byte-identical, from the
+    canonical /.well-known/agent-card.json: name LEGIT, version 0.1.0, provider organization GONNA,
+    capabilities {streaming false, pushNotifications false}, an authentication block declaring the x402
+    scheme, and ten skills that are REST paths (/v1/check/{address}, /v1/compare, /v1/arena, /v1/history,
+    /v1/watch, /v1/deep-check, /v1/leaderboard, /v1/route, /v1/badge/{address}.svg) plus the /mcp endpoint.
+    The card declares no protocolVersion and no A2A JSON-RPC task endpoint, so it grades flavored against
+    A2A 1.0.0: it is a discovery document for the REST and MCP surfaces in AgentCard shape, not a callable
+    A2A agent.
+  humanURL: https://legit.gonna.bond/
+  baseURL: https://legit.gonna.bond
+  tags:
+  - A2A
+  - agent-native
+  - x402
+  properties:
+  - type: AgentCard
+    url: a2a/gonna-bond-a2a.yml
+  - type: AgentCard
+    name: Agent card (provider-hosted, canonical path)
+    url: https://legit.gonna.bond/.well-known/agent-card.json
+  - type: AgentCard
+    name: Agent card (provider-hosted, legacy path)
+    url: https://legit.gonna.bond/.well-known/agent.json
 maintainers:
 - FN: Kin Lane
   email: kin@apievangelist.com
 - FN: APIs.json
   email: info@apis.io
 common:
+- type: AgenticAccess
+  url: agentic-access/gonna-bond-agentic-access.yml
+- type: VulnerabilityDisclosure
+  url: security/gonna-bond-vulnerability-disclosure.yml
+- type: Security
+  url: well-known/gonna-bond-security.txt
+- type: Sandbox
+  url: sandbox/gonna-bond-sandbox.yml
 - type: Website
   url: https://gonna.bond/
+- type: Documentation
+  url: https://legit.gonna.bond/docs
+- type: APIReference
+  url: https://legit.gonna.bond/openapi.json
+- type: Pricing
+  url: https://legit.gonna.bond/.well-known/legit
+- type: Community
+  url: https://t.me/GONNAFI
+- type: Twitter
+  url: https://x.com/gonnalgo
+- type: AgentCard
+  url: a2a/gonna-bond-a2a.yml
+- type: MCPServer
+  url: mcp/gonna-bond-mcp.yml
+- type: ToolCrosswalk
+  url: mcp/gonna-bond-tool-crosswalk.yml
+- type: LLMsTxt
+  url: llms/gonna-bond-llms.txt
+- type: WellKnown
+  url: well-known/gonna-bond-well-known.yml
+- type: SecurityTxt
+  url: well-known/gonna-bond-security.txt
+- type: X-X402Discovery
+  url: well-known/gonna-bond-x402.json
+- type: Webhooks
+  url: asyncapi/gonna-bond-watch-webhooks.yml
+- type: Authentication
+  url: authentication/gonna-bond-authentication.yml
+- type: Conventions
+  url: conventions/gonna-bond-conventions.yml
+- type: ErrorCatalog
+  url: errors/gonna-bond-problem-types.yml
+- type: DataModel
+  url: data-model/gonna-bond-data-model.yml
+- type: Components
+  url: components/gonna-bond-components.yml
+- type: RateLimits
+  url: rate-limits/gonna-bond-rate-limits.yml
+- type: Plans
+  url: plans/gonna-bond-plans-pricing.yml
+- type: Conformance
+  url: conformance/gonna-bond-conformance.yml
+- type: Lifecycle
+  url: lifecycle/gonna-bond-lifecycle.yml
+- type: Packages
+  url: packages/gonna-bond-packages.yml
+- type: AgentSkill
+  url: skills/_index.yml
+- type: DomainSecurity
+  url: security/gonna-bond-domain-security.yml
+- type: RegulatoryPosture
+  url: regulatory/gonna-bond-regulatory-posture.yml
+x-enrichment:
+  date: '2026-09-19'
+  status: enriched
+  artifacts_added: 27
+  pass: local-v3

@@ -1,0 +1,59 @@
+generated: '2026-09-19'
+method: searched
+source: https://legit.gonna.bond/docs
+spec_type: Webhooks
+description: >-
+  LEGIT's one event surface: the watch sentinel. POST /v1/watch (paid per call over x402) puts a 7- or
+  30-day sentinel on one tracked merchant; when the merchant's trust state really moves LEGIT records an
+  event and, if an https webhook_url was armed, POSTs it once. The provider publishes no AsyncAPI document
+  (/asyncapi.yaml and /asyncapi.json both 404 on legit.gonna.bond); this catalog is read from the docs page
+  titled "Watch webhooks and events", which the provider calls "the contract".
+registration:
+  operation: create_watch_v1_watch_post
+  path: POST /v1/watch
+  body: '{"address": "<merchant address>", "webhook_url": "https://...", "days": 7 | 30}'
+  auth: x402 per-call payment ($0.004 algorand-mainnet / $0.005 base-mainnet)
+  returns: 201 with the watch id (response schema undeclared in the spec)
+  companions:
+  - {operation: watch_status_v1_watches__watch_id__get, path: 'GET /v1/watches/{watch_id}', auth: 'watch id (bearer capability), free'}
+  - {operation: watch_events_v1_watches__watch_id__events_get, path: 'GET /v1/watches/{watch_id}/events', auth: 'watch id (bearer capability), free', note: 'The source of truth: newest first, capped at 200 events, readable after expiry until GC (default 7 days past expiry).'}
+delivery:
+  method: POST
+  content_type: application/json
+  timeout_seconds: 5
+  retries: none
+  policy: '"v1: best effort, never retried. Each event is POSTed exactly once. A webhook that times out, answers an error or is unreachable is counted in the worker stats and logged, and v1 never retries it. Your receiver should treat the webhook as a nudge, not a queue."'
+  latency: '"events fire inside the indexer cycle, so expect the POST about 2-3 minutes after the ts in the body"'
+  user_agent: 'stock python-httpx User-Agent (no custom header yet) — "do not whitelist on a fancy agent string"'
+  signature: none documented
+  dedup: '"Events fire on real transitions only and dedup by state, never by time: while the state that fired an event is unchanged, no repeat event is written."'
+payload:
+  keys: [watch_id, address, event, kind, ts, detail]
+  note: '`event` and `kind` carry the same value; `kind` is an additive alias matching the event-feed rows and "event is never removed". `detail.score` is the score AT the transition, frozen in the event, not the live score.'
+  example:
+    watch_id: 9f1c2a4b6d8e4f0a1b3c5d7e9f0a1b2c
+    address: G7V7U7H6IYRP7BIZO2KV6ODGQPESMMRDCWBYT3GIMNHTNK3VCKWSSKD55A
+    event: grade_change
+    kind: grade_change
+    ts: '2026-08-10T12:00:00'
+    detail: {from: A, to: B, score: 71.2}
+events:
+- kind: grade_change
+  fires_when: "The merchant's latest grade differs from the grade recorded on the watch."
+  detail: '{"from": "A", "to": "B", "score": 71.2}'
+- kind: score_drop
+  fires_when: The latest score fell at least LEGIT_WATCH_SCORE_DROP points (default 10) below the recorded score.
+  detail: '{"from": 88.5, "to": 71.2, "threshold": 10}'
+- kind: outage
+  fires_when: One cycle attempted 3 or more probes with zero successes while the recorded state was ok.
+  detail: '{"attempts": 3, "ok": 0}'
+- kind: recovered
+  fires_when: A successful probe returns while the recorded state was outage.
+  detail: '{"attempts": 3, "ok": 2}'
+feed_example:
+  watch_id: 9f1c2a4b6d8e4f0a1b3c5d7e9f0a1b2c
+  count: 2
+  cap: 200
+  events:
+  - {ts: '2026-08-10T12:00:00', kind: grade_change, detail: {from: A, to: B, score: 71.2}}
+  - {ts: '2026-08-09T23:45:00', kind: recovered, detail: {attempts: 3, ok: 2}}

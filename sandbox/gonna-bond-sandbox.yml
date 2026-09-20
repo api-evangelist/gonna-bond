@@ -1,0 +1,28 @@
+generated: '2026-09-19'
+method: searched
+source: openapi/gonna-bond-legit-openapi.yml
+description: >-
+  LEGIT has no separate sandbox host, test keys or test mode for its paid operations; every call goes to
+  the one production host and paid calls settle real USDC. What it does publish is an opt-in read-side
+  demo mode, declared in the OpenAPI parameter descriptions, that returns fabricated illustration data for
+  a small fixed set of demo addresses and always marks it as such.
+modes:
+- name: live
+  base_url: https://legit.gonna.bond
+  note: The only environment. Free operations need nothing; paid operations need an x402 payment on a mainnet rail (algorand-mainnet or base-mainnet). No testnet rail is offered in the 402 accepts[].
+- name: demo (read-side illustration)
+  mechanism: 'query parameter demo=true (boolean, default false)'
+  operations: [report_v1_report__address__get, batch_check_v1_batch_check_post]
+  behaviour: '"Opt-in demo mode: for the five hardcoded demo addresses, return the fabricated illustration report flagged demo=true. Off by default: fabricated data is never served unmarked."'
+  response_marker: 'demo: true on DeepReport, Leaderboard, LeaderboardEntry and RouteResponse'
+  demo_addresses: null
+  note: The five demo addresses are hardcoded server-side and are not published in the spec, the llms.txt or the docs, so none are recorded here.
+test_values:
+  api_keys: []
+  test_cards: []
+  test_accounts: []
+  note: No test credentials exist because no credentials exist. The provider's own examples use one real Algorand address (G7V7U7H6IYRP7BIZO2KV6ODGQPESMMRDCWBYT3GIMNHTNK3VCKWSSKD55A) which returned an UNRATED/provisional report on 2026-09-19.
+time_simulation: none
+fixtures: none
+related:
+  testnet_data: 'GET /v1/leaderboard?include_testnet=true and GET /v1/trending?include_testnet=true include merchants on testnet chains (algorand-testnet appears in /v1/arena/preview); this is testnet MERCHANT data on the live API, not a sandbox of the API.'

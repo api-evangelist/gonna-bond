@@ -1,0 +1,44 @@
+generated: '2026-09-19'
+method: searched
+source: >-
+  openapi/gonna-bond-legit-openapi.yml (info.version 0.1.0, every path under /v1/), the agent card
+  (version 0.1.0), the MCP initialize response (serverInfo version 1.0.0), https://legit.gonna.bond/docs
+  (watch lifetime and garbage collection), /.well-known/legit (probing tiers) and GET /v1/stats
+  (retention_days), all fetched 2026-09-19. Probed and absent: /changelog, /status, /v1/status, /terms,
+  /privacy on legit.gonna.bond (all 404).
+versioning:
+  scheme: uri-path
+  current: v1
+  api_version: 0.1.0
+  mcp_server_version: 1.0.0
+  docs: null
+  note: The contract, the agent card and /.well-known/legit all carry version 0.1.0; no versioning policy page exists.
+deprecation:
+  policy_url: null
+  sunset_header: false
+  deprecation_header: false
+  note: No deprecation policy is published and no Deprecation/Sunset (RFC 8594/9745) headers are documented. The docs note one additive change — the webhook `kind` key was added alongside `event` and "event is never removed".
+sla:
+  url: null
+  uptime_target: null
+  note: No SLA is published.
+status_page: null
+status_note: >-
+  No status page exists. GET /health is a liveness probe ({"status":"ok"}-style), GET /v1/networks reports
+  per-chain payment-facilitator health and GET /v1/stats reports service counts; none is a status page and
+  no StatusPage pointer is emitted.
+data_lifetimes:
+- object: watch sentinel
+  lifetime: 7 or 30 days from creation (WatchCreateRequest.days; "the 7-day diagnostic tier pays the same rail price as the 30-day standard")
+  after_expiry: Events stay readable until the garbage collector deletes the watch and its events LEGIT_WATCH_GC_DAYS (default 7) past expiry.
+  source: https://legit.gonna.bond/docs
+- object: watch event feed
+  lifetime: newest first, capped at 200 events per watch
+  source: https://legit.gonna.bond/docs
+- object: measurements
+  lifetime: 'retention_days: 14 (GET /v1/stats storage block, 2026-09-19)'
+  source: https://legit.gonna.bond/v1/stats
+- object: merchant probing cadence
+  lifetime: 'tiered — settling 15 min, cold 60 min, dormant 1440 min, dead 10080 min; testnet excluded; daily_budget 20000'
+  source: https://legit.gonna.bond/.well-known/legit
+deprecated_operations: []

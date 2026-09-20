@@ -1,0 +1,51 @@
+generated: '2026-09-19'
+method: searched
+docs: https://legit.gonna.bond/llms.txt
+source: >-
+  The OpenAPI at https://legit.gonna.bond/openapi.json declares NO components.securitySchemes and no
+  security[] (derive-authentication.py therefore produced nothing), so this profile is searched from the
+  provider's own statements: the agent card's `authentication` block, the llms.txt "Payments (x402)" section,
+  the x-guidance in info, and a live unauthenticated GET on https://legit.gonna.bond/v1/compare (HTTP 402,
+  2026-09-19).
+summary:
+  types: [none, x402]
+  api_key_in: []
+  oauth2_flows: []
+  accounts_required: false
+  api_keys_issued: false
+  note: >-
+    "No accounts, no API keys." Free operations need no credential at all; the five paid operations use the
+    x402 payment protocol in place of authentication — the caller proves payment, not identity.
+schemes:
+- name: anonymous
+  type: none
+  applies_to: >-
+    Every operation except the five paid ones: health, leaderboard, stats, check, receipts, route, report,
+    batch-check, trending, pulse, chain-logos, networks, merchant identity, arena/preview, .well-known/legit,
+    watches/{watch_id}, watches/{watch_id}/events, referee, referee/reproduce.py, and the MCP endpoint's
+    initialize and tools/list.
+  sources: [https://legit.gonna.bond/.well-known/agent.json, https://legit.gonna.bond/llms.txt]
+- name: x402
+  type: payment
+  scheme: x402 v2 (HTTP 402 challenge + PAYMENT-SIGNATURE retry)
+  applies_to: [compare_v1_compare_get, arena_v1_arena_get, history_v1_history_get, create_watch_v1_watch_post, deep_check_v1_deep_check_post]
+  flow:
+  - Call the paid operation with no payment. It answers HTTP 402; the body is an x402 PaymentRequired document ({x402Version: 2, error, resource, accepts[], extensions}) and the same document is carried base64-encoded in a PAYMENT-REQUIRED response header.
+  - accepts[] lists one USDC offer per rail — scheme exact, network (CAIP-2), amount in USDC base units, asset, payTo, maxTimeoutSeconds 300 — algorand-mainnet 4000 (= $0.004) and eip155:8453 (Base) 5000 (= $0.005) on 2026-09-19.
+  - Pay on one rail (Algorand via facilitator.goplausible.xyz, gasless; Base via facilitator.payai.network) and retry the identical request with the PAYMENT-SIGNATURE request header carrying the payment payload. The server exposes PAYMENT-RESPONSE via Access-Control-Expose-Headers.
+  request_header: PAYMENT-SIGNATURE
+  challenge_header: PAYMENT-REQUIRED
+  response_header: PAYMENT-RESPONSE
+  sources: [https://legit.gonna.bond/llms.txt, https://legit.gonna.bond/.well-known/agent.json, https://legit.gonna.bond/.well-known/x402]
+  observed:
+    url: https://legit.gonna.bond/v1/compare?addresses=A,B
+    http_status: 402
+    content_type: application/json
+    fetched: '2026-09-19'
+- name: watch-id-capability
+  type: capability-url
+  applies_to: [watch_status_v1_watches__watch_id__get, watch_events_v1_watches__watch_id__events_get]
+  description: >-
+    "The watch id is a bearer capability": whoever knows the watch UUID reads its status and event feed for
+    free. The docs tell integrators to keep it out of public logs, screenshots and client-side code.
+  sources: [https://legit.gonna.bond/docs]

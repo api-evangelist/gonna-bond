@@ -1,0 +1,85 @@
+# LEGIT
+
+> LEGIT is the trust and routing layer for the x402 agentic economy. Trust-check any x402 merchant or agent address on Algorand, Base, Solana, or 17 other chains before routing a payment: grades (A+ to F) and scores (0-100) come from live uptime, response latency and payment-coherence measurements, never self-reported data. One call, one verdict. Created by GONNA.
+
+## How it works
+
+1. ASK : any agent queries the leaderboard free, or calls compare and arena for deep verdicts.
+2. KNOW : every score is measured behavior across 20 chains, not self-reported claims.
+3. ROUTE : pay per call in USDC on Algorand or Base via x402; the verdict arrives with the receipt.
+
+Run as a pre-payment trust check: call GET /v1/check/{address} before any x402 payment to an address you have not paid before.
+
+Every measurement makes LEGIT harder to catch. The data compounds daily.
+
+## Free API endpoints
+
+- GET /v1/check/{address} : full trust report for one merchant (score, grade, uptime, median latency, explanation).
+  Example: curl https://legit.gonna.bond/v1/check/G7V7U7H6IYRP7BIZO2KV6ODGQPESMMRDCWBYT3GIMNHTNK3VCKWSSKD55A
+- GET /v1/report/{address} : deep trust report for one merchant (breakdown, 30-row score history, rank and percentile).
+  Example: curl https://legit.gonna.bond/v1/report/G7V7U7H6IYRP7BIZO2KV6ODGQPESMMRDCWBYT3GIMNHTNK3VCKWSSKD55A
+- GET "/v1/route?need={query}" : best-merchant routing for a stated need, with alternatives.
+  Example: curl "https://legit.gonna.bond/v1/route?need=data api"
+- POST /v1/batch-check : trust-report-lite for 1-20 addresses in one call (JSON body {"addresses": [...]}).
+  Example: curl -X POST https://legit.gonna.bond/v1/batch-check -H "Content-Type: application/json" -d '{"addresses":["G7V7U7H6IYRP7BIZO2KV6ODGQPESMMRDCWBYT3GIMNHTNK3VCKWSSKD55A"]}'
+- GET /v1/leaderboard : every scored merchant ranked best-first; filter with ?network=base-mainnet; testnet and dormant merchants are opt-in via ?include_testnet=true and ?include_dormant=true.
+  Example: curl https://legit.gonna.bond/v1/leaderboard
+- GET /v1/trending : top 5 merchants by 24h score movement.
+  Example: curl https://legit.gonna.bond/v1/trending
+- GET /v1/networks : per-chain payment network health from the facilitator.
+  Example: curl https://legit.gonna.bond/v1/networks
+- GET /v1/pulse : the live network pulse, a masked stream of real payment activity.
+  Example: curl https://legit.gonna.bond/v1/pulse
+- GET /v1/arena/preview : the free trimmed snapshot of the settlement arena.
+  Example: curl https://legit.gonna.bond/v1/arena/preview
+- GET /v1/stats : headline service stats and verifiable storage facts.
+  Example: curl https://legit.gonna.bond/v1/stats
+- GET /v1/watches/{watch_id} and GET /v1/watches/{watch_id}/events : free watch status and event feed (the watch id is the bearer capability).
+- GET /v1/badge/{address}.svg : embeddable trust badge for merchant sites (never 404s).
+  Example: curl https://legit.gonna.bond/v1/badge/G7V7U7H6IYRP7BIZO2KV6ODGQPESMMRDCWBYT3GIMNHTNK3VCKWSSKD55A.svg
+
+## Paid API endpoints (x402)
+
+All five are paid per call in USDC over x402: $0.004 on algorand-mainnet, $0.005 on base-mainnet.
+
+- GET /v1/compare?addresses=A,B : head-to-head verdict for 2-5 merchants, returns the winner and a one-sentence rationale.
+  Example: curl "https://legit.gonna.bond/v1/compare?addresses=G7V7U7H6IYRP7BIZO2KV6ODGQPESMMRDCWBYT3GIMNHTNK3VCKWSSKD55A,0x5bB4B0c6DE8B7F3a4Ec30b5aB85Fdc70B5709F68"
+- GET /v1/arena : the 24h cross-chain settlement benchmark, every rail ranked on real payment evidence (?network= narrows it to one chain).
+  Example: curl https://legit.gonna.bond/v1/arena
+- GET "/v1/history?address=ADDR" : the 30-day trust trend of one tracked merchant.
+- POST /v1/watch : a 30-day change sentinel on one merchant (grade changes, score drops, outages, recoveries), webhook-armed. JSON body {"address": "...", "webhook_url": "https://..."}.
+- POST /v1/deep-check : due diligence on up to 10 addresses in one call. JSON body {"addresses": [...]}.
+
+## Payments (x402)
+
+How to pay, the 402 flow:
+
+1. Call a paid endpoint without payment: it answers HTTP 402 with a PaymentRequired document (x402Version, resource, accepts) listing the USDC offers for every active rail.
+2. Pay on one rail (algorand-mainnet $0.004 or base-mainnet $0.005 per call).
+3. Retry the same call with the PAYMENT-SIGNATURE header carrying the payment payload. No accounts, no API keys.
+
+The algorand-mainnet rail is deliberately the cheapest (gasless via facilitator.goplausible.xyz); base-mainnet (eip155:8453) settles via facilitator.payai.network. The self-discovery document for bazaar indexing lives at https://legit.gonna.bond/.well-known/x402
+
+## MCP server (Model Context Protocol)
+
+LEGIT speaks MCP for agent-native tool calling: stateless JSON-RPC 2.0 over HTTP POST at https://legit.gonna.bond/mcp
+Tools: check_trust, compare_merchants, leaderboard, get_badge_url.
+Config example for MCP-HTTP-capable clients:
+
+{"mcpServers": {"legit": {"url": "https://legit.gonna.bond/mcp"}}}
+
+## Badge embed snippet
+
+<a href="https://legit.gonna.bond/merchant/G7V7U7H6IYRP7BIZO2KV6ODGQPESMMRDCWBYT3GIMNHTNK3VCKWSSKD55A"><img src="https://legit.gonna.bond/v1/badge/G7V7U7H6IYRP7BIZO2KV6ODGQPESMMRDCWBYT3GIMNHTNK3VCKWSSKD55A.svg" alt="LEGIT Trust Score"></a>
+
+## Discovery
+
+- Webhook and watch sentinel documentation (payload anatomy, event kinds, delivery intel, real payloads): https://legit.gonna.bond/docs
+- OpenAPI 3 document (agent-intent summaries, requestBody schemas, x-guidance): https://legit.gonna.bond/openapi.json
+- Machine-readable service document (endpoints, pricing, rails, probe policy): https://legit.gonna.bond/.well-known/legit
+- A2A agent card: https://legit.gonna.bond/.well-known/agent.json
+- Human-readable merchant dossier: GET /merchant/{address} (full trust dossier page for one merchant).
+  Example: https://legit.gonna.bond/merchant/G7V7U7H6IYRP7BIZO2KV6ODGQPESMMRDCWBYT3GIMNHTNK3VCKWSSKD55A
+- Human-readable per-chain roster: GET /chain/{network} (indexed merchants on one payment network, 24h signal up top).
+  Example: https://legit.gonna.bond/chain/base-mainnet
+- Sitemap: https://legit.gonna.bond/sitemap.xml

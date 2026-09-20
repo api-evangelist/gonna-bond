@@ -1,0 +1,64 @@
+generated: '2026-09-19'
+method: searched
+source: >-
+  Read from the provider's own contract and discovery documents — openapi/gonna-bond-legit-openapi.yml
+  (fetched from https://legit.gonna.bond/openapi.json), the live HTTP 402 body on /v1/compare,
+  /.well-known/x402, /.well-known/legit, /.well-known/security.txt, the MCP initialize response and the
+  agent card — all probed 2026-09-19. No prose compliance claims (SOC 2, ISO 27001 etc.) were found on any
+  host, so no Compliance pointer is emitted.
+domain_standard:
+  id: x402
+  conforms: true
+  evidence: >-
+    The contract itself declares the standard: openapi paths./v1/compare.get.responses.402 (and the same
+    402 on /v1/arena, /v1/history, /v1/watch, /v1/deep-check) describes "an x402 PaymentRequired document
+    (x402Version, error, resource, accepts)" and each of those five operations carries an x-payment-info
+    extension; the live 402 body on 2026-09-19 was {"x402Version": 2, ...} with accepts[] on two CAIP-2
+    networks; and /.well-known/x402 publishes the x402 v2 bazaar discovery document with six paid resources.
+    x402 is the payment standard of the agentic-commerce market LEGIT serves, and LEGIT speaks it natively.
+standards:
+- id: openapi-3.1
+  conforms: true
+  evidence: 'https://legit.gonna.bond/openapi.json: openapi: 3.1.0, 24 operations, 21 component schemas'
+- id: x402-v2
+  conforms: true
+  evidence: 'HTTP 402 on GET /v1/compare returns {"x402Version": 2, "accepts": [...], "extensions": {"x402-merchant", "bazaar"}} and a base64 PAYMENT-REQUIRED header; /.well-known/x402 declares x402Version 2'
+- id: caip-2-chain-ids
+  conforms: true
+  evidence: 'accepts[].network values are CAIP-2 identifiers — "eip155:8453" and "algorand:wGHE2Pwdvd7S12BL5FaOP20EGYesN73ktiC1qzkkit8=" — in the 402 body and /.well-known/x402 rails[].caip2'
+- id: mcp
+  conforms: true
+  evidence: 'POST https://legit.gonna.bond/mcp initialize -> {"protocolVersion": "2024-11-05", "serverInfo": {"name": "legit", "version": "1.0.0"}, "capabilities": {"tools": {}}}; tools/list returns 4 tools with JSON Schema inputSchema'
+- id: a2a-agent-card
+  conforms: false
+  evidence: 'https://legit.gonna.bond/.well-known/agent-card.json parses as an AgentCard-shaped object but declares no protocolVersion and no A2A endpoint — graded flavored in a2a/gonna-bond-a2a.yml'
+- id: rfc9116-security-txt
+  conforms: true
+  evidence: '/.well-known/security.txt served on legit.gonna.bond with Contact, Expires, Preferred-Languages and Policy fields (Policy points at the homepage, not a disclosure policy)'
+- id: rfc8615-well-known
+  conforms: true
+  evidence: 'Documents served under /.well-known/ on legit.gonna.bond: security.txt, agent-card.json, agent.json, legit, x402'
+- id: llms-txt
+  conforms: true
+  evidence: 'https://legit.gonna.bond/llms.txt (200, text/plain, 6,181 bytes): H1, blockquote summary, endpoint sections, MCP config, discovery links'
+- id: json-schema-2020-12
+  conforms: true
+  evidence: 'The 402 body extensions.bazaar.inputSchema and output.schema and extensions.x402-merchant.schema each declare "$schema": "https://json-schema.org/draft/2020-12/schema"'
+- id: rfc9457-problem-details
+  conforms: false
+  evidence: 'Errors use the FastAPI envelope — 404 {"detail": "Not Found"}, 422 HTTPValidationError {detail: [{loc, msg, type}]} — not application/problem+json'
+- id: oauth2
+  conforms: false
+  evidence: 'No securitySchemes in the OpenAPI; /.well-known/oauth-authorization-server and oauth-protected-resource 404 on every host; the provider states "No accounts, no API keys"'
+- id: oidc
+  conforms: false
+  evidence: '/.well-known/openid-configuration 404 on gonna.bond, www.gonna.bond and legit.gonna.bond'
+- id: pagination
+  conforms: partial
+  evidence: 'GET /v1/leaderboard takes page and size query parameters (page-number pagination, per the spec); no Link headers or cursor; other list endpoints are unpaginated'
+- id: idempotency
+  conforms: false
+  evidence: 'No Idempotency-Key header or replay semantics are documented; the only state-creating operation (POST /v1/watch) creates a new paid sentinel on every call'
+- id: rfc8594-deprecation-sunset
+  conforms: false
+  evidence: 'No deprecated operations in the spec and no Deprecation/Sunset headers documented'

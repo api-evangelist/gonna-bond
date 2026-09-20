@@ -1,0 +1,59 @@
+generated: '2026-09-19'
+method: derived
+format: fastapi-detail
+source: >-
+  Derived from the 4xx responses declared in openapi/gonna-bond-legit-openapi.yml (fetched from
+  https://legit.gonna.bond/openapi.json), enriched with live unauthenticated probes on 2026-09-19: GET
+  /v1/compare?addresses=A,B (402) and GET /v1/nope (404). The provider publishes no error reference page.
+envelope:
+  media_type: application/json
+  shape: '{"detail": <string | ValidationError[]>} for 404 and 422 (FastAPI default); an x402 PaymentRequired document for 402'
+  problem_json: false
+problems:
+- status: 402
+  title: Payment required (x402)
+  media_type: application/json
+  schema: 'x402 PaymentRequired: {x402Version: 2, error: string, resource: {url, description, mimeType, serviceName, tags}, accepts: [{scheme, network, amount, asset, payTo, maxTimeoutSeconds, extra}], extensions: {x402-merchant, bazaar}}'
+  headers: [PAYMENT-REQUIRED (base64 of the same document), 'Access-Control-Expose-Headers: PAYMENT-REQUIRED, PAYMENT-RESPONSE', 'Cache-Control: no-store']
+  observed_error: PAYMENT-SIGNATURE header is required
+  remediation: Pay one of the accepts[] offers on its rail and retry the identical request with the PAYMENT-SIGNATURE header. This is the normal first response of every paid operation, not a fault.
+  source_operations:
+  - openapi/gonna-bond-legit-openapi.yml#compare_v1_compare_get
+  - openapi/gonna-bond-legit-openapi.yml#arena_v1_arena_get
+  - openapi/gonna-bond-legit-openapi.yml#history_v1_history_get
+  - openapi/gonna-bond-legit-openapi.yml#create_watch_v1_watch_post
+  - openapi/gonna-bond-legit-openapi.yml#deep_check_v1_deep_check_post
+- status: 404
+  title: Not found
+  media_type: application/json
+  schema: '{"detail": "Not Found"}'
+  observed: 'GET https://legit.gonna.bond/v1/nope -> 404 {"detail":"Not Found"} (22 bytes)'
+  remediation: For /v1/history and /v1/receipts a 404 means the address is not a tracked merchant; check it with GET /v1/check/{address} first (score null / grade UNRATED means untracked).
+  source_operations:
+  - openapi/gonna-bond-legit-openapi.yml#history_v1_history_get
+  - openapi/gonna-bond-legit-openapi.yml#receipts_v1_receipts_get
+- status: 422
+  title: Validation error
+  media_type: application/json
+  schema: 'HTTPValidationError: {detail: [{loc: (string|integer)[], msg: string, type: string}]}'
+  remediation: Fix the parameter or body field named in detail[].loc; for /v1/compare the addresses list must hold 2-5 entries, for /v1/deep-check at most 10, for /v1/batch-check 1-20.
+  source_operations:
+  - openapi/gonna-bond-legit-openapi.yml#leaderboard_v1_leaderboard_get
+  - openapi/gonna-bond-legit-openapi.yml#compare_v1_compare_get
+  - openapi/gonna-bond-legit-openapi.yml#check_v1_check__address__get
+  - openapi/gonna-bond-legit-openapi.yml#receipts_v1_receipts_get
+  - openapi/gonna-bond-legit-openapi.yml#route_v1_route_get
+  - openapi/gonna-bond-legit-openapi.yml#report_v1_report__address__get
+  - openapi/gonna-bond-legit-openapi.yml#batch_check_v1_batch_check_post
+  - openapi/gonna-bond-legit-openapi.yml#trending_v1_trending_get
+  - openapi/gonna-bond-legit-openapi.yml#merchant_identity_v1_merchant__address__identity_get
+  - openapi/gonna-bond-legit-openapi.yml#arena_v1_arena_get
+  - openapi/gonna-bond-legit-openapi.yml#history_v1_history_get
+  - openapi/gonna-bond-legit-openapi.yml#create_watch_v1_watch_post
+  - openapi/gonna-bond-legit-openapi.yml#watch_status_v1_watches__watch_id__get
+  - openapi/gonna-bond-legit-openapi.yml#watch_events_v1_watches__watch_id__events_get
+  - openapi/gonna-bond-legit-openapi.yml#deep_check_v1_deep_check_post
+notes:
+- No 401/403 exists anywhere in the contract — there is nothing to authenticate against.
+- No 429 is declared and no rate-limit headers were observed (see rate-limits/gonna-bond-rate-limits.yml).
+- No 5xx responses are declared in the spec.

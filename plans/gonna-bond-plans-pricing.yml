@@ -1,0 +1,68 @@
+specification: API Commons Plans
+specificationVersion: '0.1'
+provider: GONNA
+providerId: gonna-bond
+generated: '2026-09-19'
+created: '2026-09-19'
+modified: '2026-09-19'
+method: probed
+source: https://legit.gonna.bond/.well-known/legit
+sources:
+- https://legit.gonna.bond/.well-known/legit
+- https://legit.gonna.bond/.well-known/x402
+- https://legit.gonna.bond/v1/compare?addresses=A,B
+- https://legit.gonna.bond/llms.txt
+description: >-
+  LEGIT publishes no pricing page; its prices live in two machine-readable documents (/.well-known/legit
+  and /.well-known/x402) and are asserted at call time in the x402 402 challenge, which is where they were
+  read. There are no tiers, accounts or subscriptions: every read operation is free, and five verdict
+  operations are paid per call in USDC, with the price set per settlement rail. The live 402 on
+  2026-09-19 offered exactly the two rails below; the spec's x-guidance also names solana-mainnet at $0.005
+  but no Solana offer appeared in accepts[] and /.well-known/legit lists only two rails.
+plan_count: 2
+plans:
+- id: legit-free
+  name: Free
+  type: free
+  price: 0
+  currency: USDC
+  billing_period: none
+  description: No authentication, no account. check, report, batch-check (1-20 addresses), route, merchant identity, leaderboard, trending, pulse, networks, arena/preview, stats, receipts, watch status and event feed (with the watch id), badge, health, .well-known documents, and the MCP server.
+  operations: [check_v1_check__address__get, report_v1_report__address__get, batch_check_v1_batch_check_post, route_v1_route_get, merchant_identity_v1_merchant__address__identity_get, leaderboard_v1_leaderboard_get, trending_v1_trending_get, pulse_v1_pulse_get, networks_v1_networks_get, arena_preview_v1_arena_preview_get, stats_v1_stats_get, receipts_v1_receipts_get, watch_status_v1_watches__watch_id__get, watch_events_v1_watches__watch_id__events_get, health_health_get, wellknown__well_known_legit_get, chain_logos_v1_chain_logos_get, referee_report_v1_referee_get, referee_reproduce_script_v1_referee_reproduce_py_get]
+  limits: []
+- id: legit-pay-per-call
+  name: Pay per call (x402)
+  type: usage-based
+  currency: USDC
+  billing_period: per call
+  description: Five verdict operations answer 402 until paid; the price is fixed per rail per call and settled on-chain in USDC through the rail's facilitator. No overage, no quota, no minimum.
+  operations: [compare_v1_compare_get, arena_v1_arena_get, history_v1_history_get, create_watch_v1_watch_post, deep_check_v1_deep_check_post]
+  entries:
+  - label: Per call on algorand-mainnet
+    name: per_call_algorand
+    type: metered
+    metric: call
+    unit: 1
+    price: 0.004
+    currency: USDC
+    rail: 'algorand-mainnet (CAIP-2 algorand:wGHE2Pwdvd7S12BL5FaOP20EGYesN73ktiC1qzkkit8=)'
+    asset: USDC ASA 31566704
+    amount_base_units: '4000'
+    facilitator: https://facilitator.goplausible.xyz
+    note: '"deliberately the cheapest (gasless via facilitator)" — llms.txt; feePayer named in accepts[].extra'
+  - label: Per call on base-mainnet
+    name: per_call_base
+    type: metered
+    metric: call
+    unit: 1
+    price: 0.005
+    currency: USDC
+    rail: 'base-mainnet (CAIP-2 eip155:8453)'
+    asset: USDC 0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913
+    amount_base_units: '5000'
+    facilitator: https://facilitator.payai.network
+  limits:
+  - {scope: compare, limit: '2-5 addresses per call'}
+  - {scope: deep-check, limit: 'up to 10 addresses per call'}
+  - {scope: watch, limit: '7 or 30 days per sentinel; the 7-day tier costs the same as the 30-day'}
+  - {scope: payment, limit: 'maxTimeoutSeconds 300 per offer'}

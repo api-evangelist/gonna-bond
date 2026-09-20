@@ -1,0 +1,103 @@
+generated: '2026-09-19'
+method: probed
+source: >-
+  Live GET probes of the named /.well-known/* path list on gonna.bond, www.gonna.bond and legit.gonna.bond,
+  2026-09-19, with a browser User-Agent. Every row below is a request that was actually issued; every status
+  is the one returned.
+summary:
+  hosts_probed: 3
+  paths_probed: 45
+  documents_served: 5
+  note: >-
+    The company apex (gonna.bond, www.gonna.bond — LiteSpeed-hosted static site) serves nothing under
+    /.well-known/ and returns an HTML 404 page for every path, including the two agent-card paths. Every
+    served document sits on the LEGIT product host legit.gonna.bond (Railway-hosted FastAPI): an RFC 9116
+    security.txt, the A2A-style agent card at both the canonical and legacy paths, and two provider-defined
+    discovery documents the llms.txt advertises by name — /.well-known/legit (endpoints, pricing, rails,
+    probe policy) and /.well-known/x402 (x402 v2 bazaar discovery: rails, six paid resources with accepts[]
+    and bazaar input/output schemas). No OAuth/OIDC metadata, no protected-resource metadata, no api-catalog,
+    no ai-plugin, no UCP/ACP/AAuth document and no apis.json on any host. Unknown paths on legit.gonna.bond
+    answer a 22-byte JSON 404, so the 200s are served documents, not a catch-all.
+hosts:
+- host: gonna.bond
+  role: Company apex website (GONNAVERSE community site)
+  documents:
+  - {path: /.well-known/security.txt, status: 404}
+  - {path: /.well-known/openid-configuration, status: 404}
+  - {path: /.well-known/oauth-authorization-server, status: 404}
+  - {path: /.well-known/oauth-protected-resource, status: 404}
+  - {path: /.well-known/api-catalog, status: 404}
+  - {path: /.well-known/api-catalog.json, status: 404}
+  - {path: /.well-known/ai-plugin.json, status: 404}
+  - {path: /.well-known/ucp.json, status: 404}
+  - {path: /.well-known/acp.json, status: 404}
+  - {path: /.well-known/aauth-resource.json, status: 404}
+  - {path: /.well-known/apis.json, status: 404}
+  - {path: /apis.json, status: 404}
+  - {path: /apis.yml, status: 404}
+  - {path: /.well-known/agent-card.json, status: 404}
+  - {path: /.well-known/agent.json, status: 404}
+- host: www.gonna.bond
+  role: www alias of the apex (same LiteSpeed origin, same 404 page)
+  documents:
+  - {path: /.well-known/security.txt, status: 404}
+  - {path: /.well-known/openid-configuration, status: 404}
+  - {path: /.well-known/oauth-authorization-server, status: 404}
+  - {path: /.well-known/oauth-protected-resource, status: 404}
+  - {path: /.well-known/api-catalog, status: 404}
+  - {path: /.well-known/api-catalog.json, status: 404}
+  - {path: /.well-known/ai-plugin.json, status: 404}
+  - {path: /.well-known/ucp.json, status: 404}
+  - {path: /.well-known/acp.json, status: 404}
+  - {path: /.well-known/aauth-resource.json, status: 404}
+  - {path: /.well-known/apis.json, status: 404}
+  - {path: /apis.json, status: 404}
+  - {path: /apis.yml, status: 404}
+  - {path: /.well-known/agent-card.json, status: 404}
+  - {path: /.well-known/agent.json, status: 404}
+- host: legit.gonna.bond
+  role: LEGIT API host — REST base URL, MCP server host and agent-card host
+  documents:
+  - path: /.well-known/security.txt
+    status: 200
+    content_type: text/plain; charset=utf-8
+    file: gonna-bond-security.txt
+    standard: RFC 9116
+    note: >-
+      Contact is the GONNAVERSE page https://gonna.bond/gonnaverse/ (no email or mailto), Expires
+      2027-09-20 (one year from the fetch — it appears to be generated on request), Preferred-Languages en,
+      Policy is the LEGIT homepage rather than a disclosure policy page.
+  - {path: /.well-known/openid-configuration, status: 404}
+  - {path: /.well-known/oauth-authorization-server, status: 404}
+  - {path: /.well-known/oauth-protected-resource, status: 404}
+  - {path: /.well-known/api-catalog, status: 404}
+  - {path: /.well-known/api-catalog.json, status: 404}
+  - {path: /.well-known/ai-plugin.json, status: 404}
+  - {path: /.well-known/ucp.json, status: 404}
+  - {path: /.well-known/acp.json, status: 404}
+  - {path: /.well-known/aauth-resource.json, status: 404}
+  - {path: /.well-known/apis.json, status: 404}
+  - {path: /apis.json, status: 404}
+  - {path: /apis.yml, status: 404}
+  - path: /.well-known/agent-card.json
+    status: 200
+    content_type: application/json
+    file: ../a2a/gonna-bond-agent-card.json
+    standard: A2A Agent Card (graded flavored — see a2a/gonna-bond-a2a.yml)
+  - path: /.well-known/agent.json
+    status: 200
+    content_type: application/json
+    file: ../a2a/gonna-bond-agent-card.json
+    standard: A2A Agent Card (legacy pre-0.3 path; byte-identical to the canonical path)
+  - path: /.well-known/legit
+    status: 200
+    content_type: application/json
+    file: gonna-bond-legit.json
+    standard: provider-defined service document (not a registered well-known name)
+    note: Named by the provider's llms.txt as the "machine-readable service document"; lists free and premium endpoints, per-call USDC pricing per rail, the facilitator, and the merchant probing policy. Also an operation in the OpenAPI (wellknown__well_known_legit_get).
+  - path: /.well-known/x402
+    status: 200
+    content_type: application/json
+    file: gonna-bond-x402.json
+    standard: x402 v2 discovery document (bazaar indexing; not a registered well-known name)
+    note: x402Version 2, paymentsEnabled true, two rails (algorand-mainnet USDC ASA 31566704 at $0.004 via facilitator.goplausible.xyz; eip155:8453 USDC at $0.005), six paid resources each with accepts[] and an extensions.bazaar input/output schema.

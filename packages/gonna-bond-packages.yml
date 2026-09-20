@@ -1,0 +1,13 @@
+generated: '2026-09-19'
+method: searched
+source: >-
+  Searched 2026-09-19: GitHub repository search for "legit.gonna.bond" (0 results), "gonna.bond" (1
+  unrelated result) and "gonnalgo" (0 results; github.com/gonnalgo is a user with no matching repos); npm
+  registry search "legit gonna x402" (only x402-foundation and Coinbase packages); llms.txt, docs, agent
+  card and OpenAPI (no SDK, CLI or source-code link anywhere). The provider's only published client
+  surfaces are the MCP endpoint, the x402 402 flow and the badge embed.
+package_count: 0
+packages: []
+notes:
+- No first-party SDK, client library or CLI is published on any registry or linked from any provider page; consumers call the REST contract directly or via the MCP server.
+- The llms.txt gives curl examples and an MCP client config, not an SDK.
