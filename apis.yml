@@ -24,7 +24,7 @@ modified: '2026-09-19'
 tags:
 - Company
 - Agents
-- Agent Commerce
+- Agentic Commerce
 - x402
 - Trust
 - Merchant Trust
@@ -47,6 +47,7 @@ tags_raw:
 - Blockchain
 - Payments
 - Agent-native
+- Agent Commerce
 apis:
 - aid: gonna-bond:legit-trust-api
   name: LEGIT Trust API
@@ -63,6 +64,13 @@ apis:
   humanURL: https://legit.gonna.bond/docs
   baseURL: https://legit.gonna.bond
   tags:
+  - Trust
+  - Merchant Trust
+  - x402
+  - Agentic Commerce
+  - Payments
+  - Webhook
+  tags_raw:
   - Trust
   - Merchant Trust
   - x402
