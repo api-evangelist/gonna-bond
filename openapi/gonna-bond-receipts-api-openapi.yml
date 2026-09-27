@@ -1,0 +1,215 @@
+openapi: 3.2.0
+info:
+  title: Gonna Bond Receipts API
+  version: 0.1.0
+  contact:
+    name: GONNA
+    url: https://gonna.bond/gonnaverse/
+    email: legit@gonna.bond
+  x-guidance: 'LEGIT is the trust and routing layer for the x402 agentic economy. Trust-check any x402 merchant address on Algorand, Base, Solana or 17 other chains before routing a payment: grades (A+ to F) and scores (0-100) come from live uptime, latency and payment-coherence probes, never self-reported data. Run as a pre-payment trust check: call GET /v1/check/{address} before any x402 payment to an address you have not paid before. Start FREE: GET /v1/check/{address} (full trust report), /v1/leaderboard (ranked shortlist), /v1/trending, /v1/pulse, /v1/arena/preview. Paid per call in USDC over x402: GET /v1/compare (2-5 merchants head-to-head), /v1/arena (24h cross-chain settlement benchmark, ?network= filter), /v1/history?address=... (30-day trust trend), POST /v1/watch (7- or 30-day change sentinel, webhook-armed), POST /v1/deep-check (due diligence, up to 10 addresses). How to pay: call a paid endpoint without paying and it answers 402 with a PaymentRequired document listing every active rail; pay one rail and retry with the PAYMENT-SIGNATURE header. Rails cheapest first: algorand-mainnet $0.004, base-mainnet and solana-mainnet $0.005 per call. Watch companions GET /v1/watches/{watch_id} and /v1/watches/{watch_id}/events are FREE: the watch id is the bearer capability for status and the event feed. Webhook payload anatomy: /docs; agent manifest: /llms.txt. Use LEGIT before sending an x402 payment to an unknown merchant, before accepting a counterparty in agent-to-agent settlement, or to monitor a critical upstream for trust degradation.'
+  x-logo:
+    url: https://legit.gonna.bond/favicon.png
+  description: 'Operations tagged Receipts across 2 of this provider''s published API definitions: gonna-bond-legit-openapi-original.json, gonna-bond-legit-openapi.yml. Each path carries the servers of the definition it was published in.'
+tags:
+- name: Receipts
+paths:
+  /v1/receipts:
+    get:
+      summary: Receipts
+      description: 'Verified on-chain payment receipts for one tracked merchant.
+
+
+        The 30-day ledger of real settlements observed by LEGIT''s own keyless
+
+        chain scan (Algorand first): who paid, how much, when, with the
+
+        on-chain transaction id as independently verifiable evidence.
+
+        ``receipts`` is newest-first and capped at 100 entries while
+
+        ``total_receipts`` and ``volume_usd`` cover the full window. An empty
+
+        window is an honest empty answer (total_receipts 0, receipts []),
+
+        never invented rows; untracked addresses get an honest 404.
+
+
+        Wave 47b: the address is a mandatory query parameter (the /v1/history
+
+        convention), so the registered path is exactly "/v1/receipts" and an
+
+        operator-declared X402_PREMIUM_PATHS entry matches it byte-for-byte.
+
+        This endpoint is FREE by construction: it ships outside
+
+        X402_PREMIUM_PATHS and stays free until the operator adds the path to
+
+        that env var (per-path payment via the app.payments middleware, which
+
+        this wave does not touch).'
+      operationId: receipts_v1_receipts_get
+      parameters:
+      - name: address
+        in: query
+        required: true
+        schema:
+          type: string
+          minLength: 1
+          maxLength: 300
+          description: Merchant address (or base URL) exactly as tracked by LEGIT, e.g. ?address=ADDR.
+          title: Address
+        description: Merchant address (or base URL) exactly as tracked by LEGIT, e.g. ?address=ADDR.
+        examples:
+          algorand_address:
+            summary: 30-day receipts of one Algorand merchant
+            value: G7V7U7H6IYRP7BIZO2KV6ODGQPESMMRDCWBYT3GIMNHTNK3VCKWSSKD55A
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ReceiptsResponse'
+        '404':
+          description: 'The address is not tracked by LEGIT: an honest 404, never an invented ledger.'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+      security: []
+      tags:
+      - Receipts
+components:
+  schemas:
+    ReceiptEntry:
+      properties:
+        txid:
+          type: string
+          title: Txid
+        payer:
+          type: string
+          title: Payer
+        amount_usd:
+          type: number
+          title: Amount Usd
+        ts:
+          type: string
+          title: Ts
+        network:
+          type: string
+          title: Network
+      type: object
+      required:
+      - txid
+      - payer
+      - amount_usd
+      - ts
+      - network
+      title: ReceiptEntry
+      description: 'Wave 46 (L''Arbitro Verificato): one on-chain payment receipt.
+
+
+        A real settlement observed on a public chain indexer: the payer, the
+
+        amount in USD (amount_micro / 1e6), the naive-UTC timestamp, the
+
+        network slug and the on-chain transaction id as evidence. Never
+
+        fabricated: only rows the indexer worker''s chain-receipts pass wrote.'
+    HTTPValidationError:
+      properties:
+        detail:
+          items:
+            $ref: '#/components/schemas/ValidationError'
+          type: array
+          title: Detail
+      type: object
+      title: HTTPValidationError
+    ValidationError:
+      properties:
+        loc:
+          items:
+            anyOf:
+            - type: string
+            - type: integer
+          type: array
+          title: Location
+        msg:
+          type: string
+          title: Message
+        type:
+          type: string
+          title: Error Type
+      type: object
+      required:
+      - loc
+      - msg
+      - type
+      title: ValidationError
+    ReceiptsResponse:
+      properties:
+        address:
+          type: string
+          title: Address
+        network:
+          type: string
+          title: Network
+        window_days:
+          type: integer
+          title: Window Days
+          default: 30
+        generated_at:
+          type: string
+          title: Generated At
+        provenance:
+          type: string
+          title: Provenance
+          default: algorand_indexer
+        verified_payers_30d:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Verified Payers 30D
+        top_payer_share_30d:
+          anyOf:
+          - type: number
+          - type: 'null'
+          title: Top Payer Share 30D
+        total_receipts:
+          type: integer
+          title: Total Receipts
+        volume_usd:
+          type: number
+          title: Volume Usd
+        receipts:
+          items:
+            $ref: '#/components/schemas/ReceiptEntry'
+          type: array
+          title: Receipts
+      type: object
+      required:
+      - address
+      - network
+      - generated_at
+      - total_receipts
+      - volume_usd
+      title: ReceiptsResponse
+      description: 'Wave 46 (L''Arbitro Verificato): the 30-day receipt ledger of one
+
+        tracked merchant (GET /v1/receipts?address=ADDR).
+
+
+        ``verified_payers_30d`` is omitted entirely (never null) when no
+
+        chain scan has covered the merchant yet; ``receipts`` is newest-first
+
+        and capped at 100 entries while ``total_receipts`` and ``volume_usd``
+
+        always cover the full 30-day window. An empty window is an honest
+
+        empty answer (total_receipts 0, receipts []), never invented rows.'
+x-refined-from:
+- gonna-bond-legit-openapi-original.json
+- gonna-bond-legit-openapi.yml

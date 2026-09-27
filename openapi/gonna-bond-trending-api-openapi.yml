@@ -1,0 +1,287 @@
+openapi: 3.2.0
+info:
+  title: Gonna Bond Trending API
+  version: 0.1.0
+  contact:
+    name: GONNA
+    url: https://gonna.bond/gonnaverse/
+    email: legit@gonna.bond
+  x-guidance: 'LEGIT is the trust and routing layer for the x402 agentic economy. Trust-check any x402 merchant address on Algorand, Base, Solana or 17 other chains before routing a payment: grades (A+ to F) and scores (0-100) come from live uptime, latency and payment-coherence probes, never self-reported data. Run as a pre-payment trust check: call GET /v1/check/{address} before any x402 payment to an address you have not paid before. Start FREE: GET /v1/check/{address} (full trust report), /v1/leaderboard (ranked shortlist), /v1/trending, /v1/pulse, /v1/arena/preview. Paid per call in USDC over x402: GET /v1/compare (2-5 merchants head-to-head), /v1/arena (24h cross-chain settlement benchmark, ?network= filter), /v1/history?address=... (30-day trust trend), POST /v1/watch (7- or 30-day change sentinel, webhook-armed), POST /v1/deep-check (due diligence, up to 10 addresses). How to pay: call a paid endpoint without paying and it answers 402 with a PaymentRequired document listing every active rail; pay one rail and retry with the PAYMENT-SIGNATURE header. Rails cheapest first: algorand-mainnet $0.004, base-mainnet and solana-mainnet $0.005 per call. Watch companions GET /v1/watches/{watch_id} and /v1/watches/{watch_id}/events are FREE: the watch id is the bearer capability for status and the event feed. Webhook payload anatomy: /docs; agent manifest: /llms.txt. Use LEGIT before sending an x402 payment to an unknown merchant, before accepting a counterparty in agent-to-agent settlement, or to monitor a critical upstream for trust degradation.'
+  x-logo:
+    url: https://legit.gonna.bond/favicon.png
+  description: 'Operations tagged Trending across 2 of this provider''s published API definitions: gonna-bond-legit-openapi-original.json, gonna-bond-legit-openapi.yml. Each path carries the servers of the definition it was published in.'
+tags:
+- name: Trending
+paths:
+  /v1/trending:
+    get:
+      summary: See trending active merchants
+      description: 'FREE. Top 5 by 24h score delta; falls back to top 5 by score.
+
+
+        Wave 8.9 (the honesty gate): the demo-merchant fallback renders ONLY
+
+        while the DB holds zero real merchants. When real merchants exist but
+
+        no score signal has landed yet (cold start after a redeploy), the strip
+
+        gets an honest empty list and the dashboard says it is gathering 24h
+
+        signals, instead of inventing names.
+
+
+        Wave 18 (The Instant Doctrine): served from the cycle-computed
+
+        snapshot; on a cold boot it computes ONCE, stores and serves. The
+
+        path and shape are identical to what they always were.
+
+
+        Wave 40 (La Voce): testnet networks and dormant merchants are out of
+
+        the default strip; ?include_testnet=true and ?include_dormant=true
+
+        restore them, dormant entries flagged ``dormant: true``. The opt-in
+
+        variants are computed fresh per request (bounded grouped queries,
+
+        rate limited); the snapshot serves the default view.'
+      operationId: trending_v1_trending_get
+      parameters:
+      - name: include_testnet
+        in: query
+        required: false
+        schema:
+          type: boolean
+          description: 'Wave 40: testnet/devnet/amoy/sepolia networks are excluded by default; pass ?include_testnet=true to restore them (same entry shape).'
+          default: false
+          title: Include Testnet
+        description: 'Wave 40: testnet/devnet/amoy/sepolia networks are excluded by default; pass ?include_testnet=true to restore them (same entry shape).'
+      - name: include_dormant
+        in: query
+        required: false
+        schema:
+          type: boolean
+          description: 'Wave 40: the default strip shows only merchants with a measurement inside the active window (LEGIT_ACTIVE_WINDOW_DAYS, default 7 days); pass ?include_dormant=true for the full field, dormant entries flagged dormant=true.'
+          default: false
+          title: Include Dormant
+        description: 'Wave 40: the default strip shows only merchants with a measurement inside the active window (LEGIT_ACTIVE_WINDOW_DAYS, default 7 days); pass ?include_dormant=true for the full field, dormant entries flagged dormant=true.'
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Trending'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+      security: []
+      tags:
+      - Trending
+components:
+  schemas:
+    HTTPValidationError:
+      properties:
+        detail:
+          items:
+            $ref: '#/components/schemas/ValidationError'
+          type: array
+          title: Detail
+      type: object
+      title: HTTPValidationError
+    Trending:
+      properties:
+        generated_at:
+          type: string
+          title: Generated At
+        trending:
+          items:
+            $ref: '#/components/schemas/LeaderboardEntry'
+          type: array
+          title: Trending
+        demo:
+          type: boolean
+          title: Demo
+          default: false
+      type: object
+      required:
+      - generated_at
+      - trending
+      title: Trending
+    ValidationError:
+      properties:
+        loc:
+          items:
+            anyOf:
+            - type: string
+            - type: integer
+          type: array
+          title: Location
+        msg:
+          type: string
+          title: Message
+        type:
+          type: string
+          title: Error Type
+      type: object
+      required:
+      - loc
+      - msg
+      - type
+      title: ValidationError
+    LeaderboardEntry:
+      properties:
+        rank:
+          type: integer
+          title: Rank
+        rank_global:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Rank Global
+        address:
+          type: string
+          title: Address
+        name:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Name
+        display_name:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Display Name
+        score:
+          type: number
+          title: Score
+        grade:
+          type: string
+          title: Grade
+        latency_p50_ms:
+          type: number
+          title: Latency P50 Ms
+        uptime_pct:
+          type: number
+          title: Uptime Pct
+        sample_size:
+          type: integer
+          title: Sample Size
+        network:
+          type: string
+          title: Network
+        source:
+          type: string
+          title: Source
+          default: goplausible
+        settle_count:
+          type: integer
+          title: Settle Count
+          default: 0
+        verify_count:
+          type: integer
+          title: Verify Count
+          default: 0
+        adoption:
+          type: number
+          title: Adoption
+          default: 0.0
+        payments_observed:
+          type: boolean
+          title: Payments Observed
+          default: false
+        provisional:
+          type: boolean
+          title: Provisional
+          default: false
+        explorer_url:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Explorer Url
+        external_calls_30d:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: External Calls 30D
+        external_payers_30d:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: External Payers 30D
+        external_demand_source:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: External Demand Source
+        intel_avg_ticket:
+          anyOf:
+          - type: number
+          - type: 'null'
+          title: Intel Avg Ticket
+        intel_verifies:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Intel Verifies
+        intel_first_seen:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Intel First Seen
+        intel_last_seen:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Intel Last Seen
+        intel_source:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Intel Source
+        domain:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Domain
+        logo_url:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Logo Url
+        settles_7d:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Settles 7D
+        volume_7d:
+          anyOf:
+          - type: number
+          - type: 'null'
+          title: Volume 7D
+        demo:
+          type: boolean
+          title: Demo
+          default: false
+        dormant:
+          type: boolean
+          title: Dormant
+          default: false
+      type: object
+      required:
+      - rank
+      - address
+      - score
+      - grade
+      - latency_p50_ms
+      - uptime_pct
+      - sample_size
+      - network
+      title: LeaderboardEntry
+x-refined-from:
+- gonna-bond-legit-openapi-original.json
+- gonna-bond-legit-openapi.yml

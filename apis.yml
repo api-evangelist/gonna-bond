@@ -33,7 +33,7 @@ tags:
 - Algorand
 - Blockchain
 - Payments
-- agent-native
+- Agent-Native
 tags_raw:
 - Company
 - Agents
@@ -48,64 +48,23 @@ tags_raw:
 - Payments
 - Agent-native
 - Agent Commerce
+- agent-native
 apis:
-- aid: gonna-bond:legit-trust-api
-  name: LEGIT Trust API
-  description: >-
-    REST API for the LEGIT trust oracle: trust-check one x402 merchant address (score, grade, uptime, latency,
-    explanation), pull a deep report with 30-day history and percentile, batch-check up to 20 addresses,
-    get a best-merchant routing recommendation for a stated need, resolve on-chain merchant identity, read
-    the ranked leaderboard, trending merchants, per-chain network health, receipts and the live network
-    pulse. Five verdict endpoints (compare, arena, history, watch, deep-check) answer HTTP 402 with an x402
-    v2 PaymentRequired document and are paid per call in USDC (algorand-mainnet $0.004, base-mainnet $0.005);
-    everything else is free with no authentication. 24 operations across 24 paths, published as OpenAPI
-    3.1.0 at https://legit.gonna.bond/openapi.json; the spec declares no servers[] and the base URL is the
-    host the provider's own llms.txt examples call.
-  humanURL: https://legit.gonna.bond/docs
-  baseURL: https://legit.gonna.bond
-  tags:
-  - Trust
-  - Merchant Trust
-  - x402
-  - Agentic Commerce
-  - Payments
-  - Webhook
-  tags_raw:
-  - Trust
-  - Merchant Trust
-  - x402
-  - Agent Commerce
-  - Payments
-  - Webhooks
-  properties:
-  - type: OpenAPI
-    url: openapi/gonna-bond-legit-openapi.yml
-  - type: OpenAPI
-    name: LEGIT OpenAPI 3.1.0 (provider-hosted)
-    url: https://legit.gonna.bond/openapi.json
-  - type: Documentation
-    url: https://legit.gonna.bond/docs
-  - type: APIReference
-    url: https://legit.gonna.bond/openapi.json
-  - type: LLMsTxt
-    url: llms/gonna-bond-llms.txt
-  - type: Webhooks
-    url: asyncapi/gonna-bond-watch-webhooks.yml
-  - type: Overlay
-    url: overlays/gonna-bond-legit-overlay.yaml
-  - type: X-X402Discovery
-    url: https://legit.gonna.bond/.well-known/x402
 - aid: gonna-bond:legit-mcp-server
   name: LEGIT MCP Server
   description: >-
-    Remote Model Context Protocol server at https://legit.gonna.bond/mcp (stateless JSON-RPC 2.0 over HTTP
-    POST; initialize reports protocolVersion 2024-11-05, serverInfo legit 1.0.0, capabilities tools only).
-    tools/list answers anonymously with four tools carrying real inputSchema: check_trust, compare_merchants,
-    leaderboard and get_badge_url. No authentication, no API keys; a GET on the endpoint returns a
-    self-description naming the four tools and pointing at llms.txt for the client config.
+    Remote Model Context Protocol server at https://legit.gonna.bond/mcp (stateless JSON-RPC 2.0 over
+    HTTP POST; initialize reports protocolVersion 2024-11-05, serverInfo legit 1.0.0, capabilities tools
+    only). tools/list answers anonymously with four tools carrying real inputSchema: check_trust, compare_merchants,
+    leaderboard and get_badge_url. No authentication, no API keys; a GET on the endpoint returns a self-description
+    naming the four tools and pointing at llms.txt for the client config.
   humanURL: https://legit.gonna.bond/llms.txt
   baseURL: https://legit.gonna.bond/mcp
   tags:
+  - MCP
+  - Agent-Native
+  - Trust
+  tags_raw:
   - MCP
   - agent-native
   - Trust
@@ -121,16 +80,19 @@ apis:
   name: LEGIT A2A Agent Card
   description: >-
     Agent card served from https://legit.gonna.bond/.well-known/agent.json and, byte-identical, from the
-    canonical /.well-known/agent-card.json: name LEGIT, version 0.1.0, provider organization GONNA,
-    capabilities {streaming false, pushNotifications false}, an authentication block declaring the x402
-    scheme, and ten skills that are REST paths (/v1/check/{address}, /v1/compare, /v1/arena, /v1/history,
-    /v1/watch, /v1/deep-check, /v1/leaderboard, /v1/route, /v1/badge/{address}.svg) plus the /mcp endpoint.
-    The card declares no protocolVersion and no A2A JSON-RPC task endpoint, so it grades flavored against
-    A2A 1.0.0: it is a discovery document for the REST and MCP surfaces in AgentCard shape, not a callable
-    A2A agent.
+    canonical /.well-known/agent-card.json: name LEGIT, version 0.1.0, provider organization GONNA, capabilities
+    {streaming false, pushNotifications false}, an authentication block declaring the x402 scheme, and
+    ten skills that are REST paths (/v1/check/{address}, /v1/compare, /v1/arena, /v1/history, /v1/watch,
+    /v1/deep-check, /v1/leaderboard, /v1/route, /v1/badge/{address}.svg) plus the /mcp endpoint. The card
+    declares no protocolVersion and no A2A JSON-RPC task endpoint, so it grades flavored against A2A 1.0.0:
+    it is a discovery document for the REST and MCP surfaces in AgentCard shape, not a callable A2A agent.
   humanURL: https://legit.gonna.bond/
   baseURL: https://legit.gonna.bond
   tags:
+  - A2A
+  - Agent-Native
+  - x402
+  tags_raw:
   - A2A
   - agent-native
   - x402
@@ -143,12 +105,434 @@ apis:
   - type: AgentCard
     name: Agent card (provider-hosted, legacy path)
     url: https://legit.gonna.bond/.well-known/agent.json
+- aid: gonna-bond:gonna-bond-arena-api
+  name: GONNA Arena API
+  description: The Arena API from GONNA — 2 operation(s) for arena.
+  humanURL: https://legit.gonna.bond/docs
+  baseURL: https://legit.gonna.bond
+  tags:
+  - Arena
+  properties:
+  - type: OpenAPI
+    url: openapi/gonna-bond-arena-api-openapi.yml
+  - type: Documentation
+    url: https://legit.gonna.bond/docs
+  - type: APIReference
+    url: https://legit.gonna.bond/openapi.json
+  - type: LLMsTxt
+    url: llms/gonna-bond-llms.txt
+  - type: Webhooks
+    url: asyncapi/gonna-bond-watch-webhooks.yml
+  - type: X-X402Discovery
+    url: https://legit.gonna.bond/.well-known/x402
+- aid: gonna-bond:gonna-bond-batch-check-api
+  name: GONNA Batch Check API
+  description: The Batch Check API from GONNA — 1 operation(s) for batch check.
+  humanURL: https://legit.gonna.bond/docs
+  baseURL: https://legit.gonna.bond
+  tags:
+  - Batch Check
+  properties:
+  - type: OpenAPI
+    url: openapi/gonna-bond-batch-check-api-openapi.yml
+  - type: Documentation
+    url: https://legit.gonna.bond/docs
+  - type: APIReference
+    url: https://legit.gonna.bond/openapi.json
+  - type: LLMsTxt
+    url: llms/gonna-bond-llms.txt
+  - type: Webhooks
+    url: asyncapi/gonna-bond-watch-webhooks.yml
+  - type: X-X402Discovery
+    url: https://legit.gonna.bond/.well-known/x402
+- aid: gonna-bond:gonna-bond-chain-logos-api
+  name: GONNA Chain Logos API
+  description: The Chain Logos API from GONNA — 1 operation(s) for chain logos.
+  humanURL: https://legit.gonna.bond/docs
+  baseURL: https://legit.gonna.bond
+  tags:
+  - Chain Logos
+  properties:
+  - type: OpenAPI
+    url: openapi/gonna-bond-chain-logos-api-openapi.yml
+  - type: Documentation
+    url: https://legit.gonna.bond/docs
+  - type: APIReference
+    url: https://legit.gonna.bond/openapi.json
+  - type: LLMsTxt
+    url: llms/gonna-bond-llms.txt
+  - type: Webhooks
+    url: asyncapi/gonna-bond-watch-webhooks.yml
+  - type: X-X402Discovery
+    url: https://legit.gonna.bond/.well-known/x402
+- aid: gonna-bond:gonna-bond-check-api
+  name: GONNA Check API
+  description: The Check API from GONNA — 1 operation(s) for check.
+  humanURL: https://legit.gonna.bond/docs
+  baseURL: https://legit.gonna.bond
+  tags:
+  - Check
+  properties:
+  - type: OpenAPI
+    url: openapi/gonna-bond-check-api-openapi.yml
+  - type: Documentation
+    url: https://legit.gonna.bond/docs
+  - type: APIReference
+    url: https://legit.gonna.bond/openapi.json
+  - type: LLMsTxt
+    url: llms/gonna-bond-llms.txt
+  - type: Webhooks
+    url: asyncapi/gonna-bond-watch-webhooks.yml
+  - type: X-X402Discovery
+    url: https://legit.gonna.bond/.well-known/x402
+- aid: gonna-bond:gonna-bond-compare-api
+  name: GONNA Compare API
+  description: The Compare API from GONNA — 1 operation(s) for compare.
+  humanURL: https://legit.gonna.bond/docs
+  baseURL: https://legit.gonna.bond
+  tags:
+  - Compare
+  properties:
+  - type: OpenAPI
+    url: openapi/gonna-bond-compare-api-openapi.yml
+  - type: Documentation
+    url: https://legit.gonna.bond/docs
+  - type: APIReference
+    url: https://legit.gonna.bond/openapi.json
+  - type: LLMsTxt
+    url: llms/gonna-bond-llms.txt
+  - type: Webhooks
+    url: asyncapi/gonna-bond-watch-webhooks.yml
+  - type: X-X402Discovery
+    url: https://legit.gonna.bond/.well-known/x402
+- aid: gonna-bond:gonna-bond-deep-check-api
+  name: GONNA Deep Check API
+  description: The Deep Check API from GONNA — 1 operation(s) for deep check.
+  humanURL: https://legit.gonna.bond/docs
+  baseURL: https://legit.gonna.bond
+  tags:
+  - Deep Check
+  properties:
+  - type: OpenAPI
+    url: openapi/gonna-bond-deep-check-api-openapi.yml
+  - type: Documentation
+    url: https://legit.gonna.bond/docs
+  - type: APIReference
+    url: https://legit.gonna.bond/openapi.json
+  - type: LLMsTxt
+    url: llms/gonna-bond-llms.txt
+  - type: Webhooks
+    url: asyncapi/gonna-bond-watch-webhooks.yml
+  - type: X-X402Discovery
+    url: https://legit.gonna.bond/.well-known/x402
+- aid: gonna-bond:gonna-bond-health-api
+  name: GONNA Health API
+  description: The Health API from GONNA — 1 operation(s) for health.
+  humanURL: https://legit.gonna.bond/docs
+  baseURL: https://legit.gonna.bond
+  tags:
+  - Health
+  properties:
+  - type: OpenAPI
+    url: openapi/gonna-bond-health-api-openapi.yml
+  - type: Documentation
+    url: https://legit.gonna.bond/docs
+  - type: APIReference
+    url: https://legit.gonna.bond/openapi.json
+  - type: LLMsTxt
+    url: llms/gonna-bond-llms.txt
+  - type: Webhooks
+    url: asyncapi/gonna-bond-watch-webhooks.yml
+  - type: X-X402Discovery
+    url: https://legit.gonna.bond/.well-known/x402
+- aid: gonna-bond:gonna-bond-history-api
+  name: GONNA History API
+  description: The History API from GONNA — 1 operation(s) for history.
+  humanURL: https://legit.gonna.bond/docs
+  baseURL: https://legit.gonna.bond
+  tags:
+  - History
+  properties:
+  - type: OpenAPI
+    url: openapi/gonna-bond-history-api-openapi.yml
+  - type: Documentation
+    url: https://legit.gonna.bond/docs
+  - type: APIReference
+    url: https://legit.gonna.bond/openapi.json
+  - type: LLMsTxt
+    url: llms/gonna-bond-llms.txt
+  - type: Webhooks
+    url: asyncapi/gonna-bond-watch-webhooks.yml
+  - type: X-X402Discovery
+    url: https://legit.gonna.bond/.well-known/x402
+- aid: gonna-bond:gonna-bond-leaderboard-api
+  name: GONNA Leaderboard API
+  description: The Leaderboard API from GONNA — 1 operation(s) for leaderboard.
+  humanURL: https://legit.gonna.bond/docs
+  baseURL: https://legit.gonna.bond
+  tags:
+  - Leaderboard
+  properties:
+  - type: OpenAPI
+    url: openapi/gonna-bond-leaderboard-api-openapi.yml
+  - type: Documentation
+    url: https://legit.gonna.bond/docs
+  - type: APIReference
+    url: https://legit.gonna.bond/openapi.json
+  - type: LLMsTxt
+    url: llms/gonna-bond-llms.txt
+  - type: Webhooks
+    url: asyncapi/gonna-bond-watch-webhooks.yml
+  - type: X-X402Discovery
+    url: https://legit.gonna.bond/.well-known/x402
+- aid: gonna-bond:gonna-bond-merchant-api
+  name: GONNA Merchant API
+  description: The Merchant API from GONNA — 1 operation(s) for merchant.
+  humanURL: https://legit.gonna.bond/docs
+  baseURL: https://legit.gonna.bond
+  tags:
+  - Merchant
+  properties:
+  - type: OpenAPI
+    url: openapi/gonna-bond-merchant-api-openapi.yml
+  - type: Documentation
+    url: https://legit.gonna.bond/docs
+  - type: APIReference
+    url: https://legit.gonna.bond/openapi.json
+  - type: LLMsTxt
+    url: llms/gonna-bond-llms.txt
+  - type: Webhooks
+    url: asyncapi/gonna-bond-watch-webhooks.yml
+  - type: X-X402Discovery
+    url: https://legit.gonna.bond/.well-known/x402
+- aid: gonna-bond:gonna-bond-networks-api
+  name: GONNA Networks API
+  description: The Networks API from GONNA — 1 operation(s) for networks.
+  humanURL: https://legit.gonna.bond/docs
+  baseURL: https://legit.gonna.bond
+  tags:
+  - Networks
+  properties:
+  - type: OpenAPI
+    url: openapi/gonna-bond-networks-api-openapi.yml
+  - type: Documentation
+    url: https://legit.gonna.bond/docs
+  - type: APIReference
+    url: https://legit.gonna.bond/openapi.json
+  - type: LLMsTxt
+    url: llms/gonna-bond-llms.txt
+  - type: Webhooks
+    url: asyncapi/gonna-bond-watch-webhooks.yml
+  - type: X-X402Discovery
+    url: https://legit.gonna.bond/.well-known/x402
+- aid: gonna-bond:gonna-bond-pulse-api
+  name: GONNA Pulse API
+  description: The Pulse API from GONNA — 1 operation(s) for pulse.
+  humanURL: https://legit.gonna.bond/docs
+  baseURL: https://legit.gonna.bond
+  tags:
+  - Pulse
+  properties:
+  - type: OpenAPI
+    url: openapi/gonna-bond-pulse-api-openapi.yml
+  - type: Documentation
+    url: https://legit.gonna.bond/docs
+  - type: APIReference
+    url: https://legit.gonna.bond/openapi.json
+  - type: LLMsTxt
+    url: llms/gonna-bond-llms.txt
+  - type: Webhooks
+    url: asyncapi/gonna-bond-watch-webhooks.yml
+  - type: X-X402Discovery
+    url: https://legit.gonna.bond/.well-known/x402
+- aid: gonna-bond:gonna-bond-receipts-api
+  name: GONNA Receipts API
+  description: The Receipts API from GONNA — 1 operation(s) for receipts.
+  humanURL: https://legit.gonna.bond/docs
+  baseURL: https://legit.gonna.bond
+  tags:
+  - Receipts
+  properties:
+  - type: OpenAPI
+    url: openapi/gonna-bond-receipts-api-openapi.yml
+  - type: Documentation
+    url: https://legit.gonna.bond/docs
+  - type: APIReference
+    url: https://legit.gonna.bond/openapi.json
+  - type: LLMsTxt
+    url: llms/gonna-bond-llms.txt
+  - type: Webhooks
+    url: asyncapi/gonna-bond-watch-webhooks.yml
+  - type: X-X402Discovery
+    url: https://legit.gonna.bond/.well-known/x402
+- aid: gonna-bond:gonna-bond-referee-api
+  name: GONNA Referee API
+  description: The Referee API from GONNA — 2 operation(s) for referee.
+  humanURL: https://legit.gonna.bond/docs
+  baseURL: https://legit.gonna.bond
+  tags:
+  - Referee
+  properties:
+  - type: OpenAPI
+    url: openapi/gonna-bond-referee-api-openapi.yml
+  - type: Documentation
+    url: https://legit.gonna.bond/docs
+  - type: APIReference
+    url: https://legit.gonna.bond/openapi.json
+  - type: LLMsTxt
+    url: llms/gonna-bond-llms.txt
+  - type: Webhooks
+    url: asyncapi/gonna-bond-watch-webhooks.yml
+  - type: X-X402Discovery
+    url: https://legit.gonna.bond/.well-known/x402
+- aid: gonna-bond:gonna-bond-report-api
+  name: GONNA Report API
+  description: The Report API from GONNA — 1 operation(s) for report.
+  humanURL: https://legit.gonna.bond/docs
+  baseURL: https://legit.gonna.bond
+  tags:
+  - Report
+  properties:
+  - type: OpenAPI
+    url: openapi/gonna-bond-report-api-openapi.yml
+  - type: Documentation
+    url: https://legit.gonna.bond/docs
+  - type: APIReference
+    url: https://legit.gonna.bond/openapi.json
+  - type: LLMsTxt
+    url: llms/gonna-bond-llms.txt
+  - type: Webhooks
+    url: asyncapi/gonna-bond-watch-webhooks.yml
+  - type: X-X402Discovery
+    url: https://legit.gonna.bond/.well-known/x402
+- aid: gonna-bond:gonna-bond-route-api
+  name: GONNA Route API
+  description: The Route API from GONNA — 1 operation(s) for route.
+  humanURL: https://legit.gonna.bond/docs
+  baseURL: https://legit.gonna.bond
+  tags:
+  - Route
+  properties:
+  - type: OpenAPI
+    url: openapi/gonna-bond-route-api-openapi.yml
+  - type: Documentation
+    url: https://legit.gonna.bond/docs
+  - type: APIReference
+    url: https://legit.gonna.bond/openapi.json
+  - type: LLMsTxt
+    url: llms/gonna-bond-llms.txt
+  - type: Webhooks
+    url: asyncapi/gonna-bond-watch-webhooks.yml
+  - type: X-X402Discovery
+    url: https://legit.gonna.bond/.well-known/x402
+- aid: gonna-bond:gonna-bond-stats-api
+  name: GONNA Stats API
+  description: The Stats API from GONNA — 1 operation(s) for stats.
+  humanURL: https://legit.gonna.bond/docs
+  baseURL: https://legit.gonna.bond
+  tags:
+  - Stats
+  properties:
+  - type: OpenAPI
+    url: openapi/gonna-bond-stats-api-openapi.yml
+  - type: Documentation
+    url: https://legit.gonna.bond/docs
+  - type: APIReference
+    url: https://legit.gonna.bond/openapi.json
+  - type: LLMsTxt
+    url: llms/gonna-bond-llms.txt
+  - type: Webhooks
+    url: asyncapi/gonna-bond-watch-webhooks.yml
+  - type: X-X402Discovery
+    url: https://legit.gonna.bond/.well-known/x402
+- aid: gonna-bond:gonna-bond-trending-api
+  name: GONNA Trending API
+  description: The Trending API from GONNA — 1 operation(s) for trending.
+  humanURL: https://legit.gonna.bond/docs
+  baseURL: https://legit.gonna.bond
+  tags:
+  - Trending
+  properties:
+  - type: OpenAPI
+    url: openapi/gonna-bond-trending-api-openapi.yml
+  - type: Documentation
+    url: https://legit.gonna.bond/docs
+  - type: APIReference
+    url: https://legit.gonna.bond/openapi.json
+  - type: LLMsTxt
+    url: llms/gonna-bond-llms.txt
+  - type: Webhooks
+    url: asyncapi/gonna-bond-watch-webhooks.yml
+  - type: X-X402Discovery
+    url: https://legit.gonna.bond/.well-known/x402
+- aid: gonna-bond:gonna-bond-watch-api
+  name: GONNA Watch API
+  description: The Watch API from GONNA — 1 operation(s) for watch.
+  humanURL: https://legit.gonna.bond/docs
+  baseURL: https://legit.gonna.bond
+  tags:
+  - Watch
+  properties:
+  - type: OpenAPI
+    url: openapi/gonna-bond-watch-api-openapi.yml
+  - type: Documentation
+    url: https://legit.gonna.bond/docs
+  - type: APIReference
+    url: https://legit.gonna.bond/openapi.json
+  - type: LLMsTxt
+    url: llms/gonna-bond-llms.txt
+  - type: Webhooks
+    url: asyncapi/gonna-bond-watch-webhooks.yml
+  - type: X-X402Discovery
+    url: https://legit.gonna.bond/.well-known/x402
+- aid: gonna-bond:gonna-bond-watches-api
+  name: GONNA Watches API
+  description: The Watches API from GONNA — 2 operation(s) for watches.
+  humanURL: https://legit.gonna.bond/docs
+  baseURL: https://legit.gonna.bond
+  tags:
+  - Watches
+  properties:
+  - type: OpenAPI
+    url: openapi/gonna-bond-watches-api-openapi.yml
+  - type: Documentation
+    url: https://legit.gonna.bond/docs
+  - type: APIReference
+    url: https://legit.gonna.bond/openapi.json
+  - type: LLMsTxt
+    url: llms/gonna-bond-llms.txt
+  - type: Webhooks
+    url: asyncapi/gonna-bond-watch-webhooks.yml
+  - type: X-X402Discovery
+    url: https://legit.gonna.bond/.well-known/x402
+- aid: gonna-bond:gonna-bond-well-known-api
+  name: GONNA .well Known API
+  description: The .well Known API from GONNA — 1 operation(s) for .well known.
+  humanURL: https://legit.gonna.bond/docs
+  baseURL: https://legit.gonna.bond
+  tags:
+  - .well Known
+  properties:
+  - type: OpenAPI
+    url: openapi/gonna-bond-well-known-api-openapi.yml
+  - type: Documentation
+    url: https://legit.gonna.bond/docs
+  - type: APIReference
+    url: https://legit.gonna.bond/openapi.json
+  - type: LLMsTxt
+    url: llms/gonna-bond-llms.txt
+  - type: Webhooks
+    url: asyncapi/gonna-bond-watch-webhooks.yml
+  - type: X-X402Discovery
+    url: https://legit.gonna.bond/.well-known/x402
 maintainers:
 - FN: Kin Lane
   email: kin@apievangelist.com
 - FN: APIs.json
   email: info@apis.io
 common:
+- type: Overlay
+  url: overlays/gonna-bond-legit-overlay.yaml
 - type: AgenticAccess
   url: agentic-access/gonna-bond-agentic-access.yml
 - type: VulnerabilityDisclosure

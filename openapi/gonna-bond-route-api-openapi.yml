@@ -1,0 +1,255 @@
+openapi: 3.2.0
+info:
+  title: Gonna Bond Route API
+  version: 0.1.0
+  contact:
+    name: GONNA
+    url: https://gonna.bond/gonnaverse/
+    email: legit@gonna.bond
+  x-guidance: 'LEGIT is the trust and routing layer for the x402 agentic economy. Trust-check any x402 merchant address on Algorand, Base, Solana or 17 other chains before routing a payment: grades (A+ to F) and scores (0-100) come from live uptime, latency and payment-coherence probes, never self-reported data. Run as a pre-payment trust check: call GET /v1/check/{address} before any x402 payment to an address you have not paid before. Start FREE: GET /v1/check/{address} (full trust report), /v1/leaderboard (ranked shortlist), /v1/trending, /v1/pulse, /v1/arena/preview. Paid per call in USDC over x402: GET /v1/compare (2-5 merchants head-to-head), /v1/arena (24h cross-chain settlement benchmark, ?network= filter), /v1/history?address=... (30-day trust trend), POST /v1/watch (7- or 30-day change sentinel, webhook-armed), POST /v1/deep-check (due diligence, up to 10 addresses). How to pay: call a paid endpoint without paying and it answers 402 with a PaymentRequired document listing every active rail; pay one rail and retry with the PAYMENT-SIGNATURE header. Rails cheapest first: algorand-mainnet $0.004, base-mainnet and solana-mainnet $0.005 per call. Watch companions GET /v1/watches/{watch_id} and /v1/watches/{watch_id}/events are FREE: the watch id is the bearer capability for status and the event feed. Webhook payload anatomy: /docs; agent manifest: /llms.txt. Use LEGIT before sending an x402 payment to an unknown merchant, before accepting a counterparty in agent-to-agent settlement, or to monitor a critical upstream for trust degradation.'
+  x-logo:
+    url: https://legit.gonna.bond/favicon.png
+  description: 'Operations tagged Route across 2 of this provider''s published API definitions: gonna-bond-legit-openapi-original.json, gonna-bond-legit-openapi.yml. Each path carries the servers of the definition it was published in.'
+tags:
+- name: Route
+paths:
+  /v1/route:
+    get:
+      summary: Get a routing recommendation between two counterparties
+      description: 'Phase 0 routing: keyword match on merchant name/address, best score wins.'
+      operationId: route_v1_route_get
+      parameters:
+      - name: need
+        in: query
+        required: true
+        schema:
+          type: string
+          minLength: 1
+          maxLength: 200
+          title: Need
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RouteResponse'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+      security: []
+      tags:
+      - Route
+components:
+  schemas:
+    HTTPValidationError:
+      properties:
+        detail:
+          items:
+            $ref: '#/components/schemas/ValidationError'
+          type: array
+          title: Detail
+      type: object
+      title: HTTPValidationError
+    ValidationError:
+      properties:
+        loc:
+          items:
+            anyOf:
+            - type: string
+            - type: integer
+          type: array
+          title: Location
+        msg:
+          type: string
+          title: Message
+        type:
+          type: string
+          title: Error Type
+      type: object
+      required:
+      - loc
+      - msg
+      - type
+      title: ValidationError
+    RouteResponse:
+      properties:
+        query:
+          type: string
+          title: Query
+        chosen:
+          anyOf:
+          - $ref: '#/components/schemas/LeaderboardEntry'
+          - type: 'null'
+        alternatives:
+          items:
+            $ref: '#/components/schemas/LeaderboardEntry'
+          type: array
+          title: Alternatives
+        payment_hint:
+          type: object
+          title: Payment Hint
+        demo:
+          type: boolean
+          title: Demo
+          default: false
+      type: object
+      required:
+      - query
+      - payment_hint
+      title: RouteResponse
+    LeaderboardEntry:
+      properties:
+        rank:
+          type: integer
+          title: Rank
+        rank_global:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Rank Global
+        address:
+          type: string
+          title: Address
+        name:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Name
+        display_name:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Display Name
+        score:
+          type: number
+          title: Score
+        grade:
+          type: string
+          title: Grade
+        latency_p50_ms:
+          type: number
+          title: Latency P50 Ms
+        uptime_pct:
+          type: number
+          title: Uptime Pct
+        sample_size:
+          type: integer
+          title: Sample Size
+        network:
+          type: string
+          title: Network
+        source:
+          type: string
+          title: Source
+          default: goplausible
+        settle_count:
+          type: integer
+          title: Settle Count
+          default: 0
+        verify_count:
+          type: integer
+          title: Verify Count
+          default: 0
+        adoption:
+          type: number
+          title: Adoption
+          default: 0.0
+        payments_observed:
+          type: boolean
+          title: Payments Observed
+          default: false
+        provisional:
+          type: boolean
+          title: Provisional
+          default: false
+        explorer_url:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Explorer Url
+        external_calls_30d:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: External Calls 30D
+        external_payers_30d:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: External Payers 30D
+        external_demand_source:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: External Demand Source
+        intel_avg_ticket:
+          anyOf:
+          - type: number
+          - type: 'null'
+          title: Intel Avg Ticket
+        intel_verifies:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Intel Verifies
+        intel_first_seen:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Intel First Seen
+        intel_last_seen:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Intel Last Seen
+        intel_source:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Intel Source
+        domain:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Domain
+        logo_url:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Logo Url
+        settles_7d:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Settles 7D
+        volume_7d:
+          anyOf:
+          - type: number
+          - type: 'null'
+          title: Volume 7D
+        demo:
+          type: boolean
+          title: Demo
+          default: false
+        dormant:
+          type: boolean
+          title: Dormant
+          default: false
+      type: object
+      required:
+      - rank
+      - address
+      - score
+      - grade
+      - latency_p50_ms
+      - uptime_pct
+      - sample_size
+      - network
+      title: LeaderboardEntry
+x-refined-from:
+- gonna-bond-legit-openapi-original.json
+- gonna-bond-legit-openapi.yml

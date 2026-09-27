@@ -1,0 +1,181 @@
+openapi: 3.2.0
+info:
+  title: Gonna Bond Arena API
+  version: 0.1.0
+  contact:
+    name: GONNA
+    url: https://gonna.bond/gonnaverse/
+    email: legit@gonna.bond
+  x-guidance: 'LEGIT is the trust and routing layer for the x402 agentic economy. Trust-check any x402 merchant address on Algorand, Base, Solana or 17 other chains before routing a payment: grades (A+ to F) and scores (0-100) come from live uptime, latency and payment-coherence probes, never self-reported data. Run as a pre-payment trust check: call GET /v1/check/{address} before any x402 payment to an address you have not paid before. Start FREE: GET /v1/check/{address} (full trust report), /v1/leaderboard (ranked shortlist), /v1/trending, /v1/pulse, /v1/arena/preview. Paid per call in USDC over x402: GET /v1/compare (2-5 merchants head-to-head), /v1/arena (24h cross-chain settlement benchmark, ?network= filter), /v1/history?address=... (30-day trust trend), POST /v1/watch (7- or 30-day change sentinel, webhook-armed), POST /v1/deep-check (due diligence, up to 10 addresses). How to pay: call a paid endpoint without paying and it answers 402 with a PaymentRequired document listing every active rail; pay one rail and retry with the PAYMENT-SIGNATURE header. Rails cheapest first: algorand-mainnet $0.004, base-mainnet and solana-mainnet $0.005 per call. Watch companions GET /v1/watches/{watch_id} and /v1/watches/{watch_id}/events are FREE: the watch id is the bearer capability for status and the event feed. Webhook payload anatomy: /docs; agent manifest: /llms.txt. Use LEGIT before sending an x402 payment to an unknown merchant, before accepting a counterparty in agent-to-agent settlement, or to monitor a critical upstream for trust degradation.'
+  x-logo:
+    url: https://legit.gonna.bond/favicon.png
+  description: 'Operations tagged Arena across 2 of this provider''s published API definitions: gonna-bond-legit-openapi-original.json, gonna-bond-legit-openapi.yml. Each path carries the servers of the definition it was published in.'
+tags:
+- name: Arena
+paths:
+  /v1/arena:
+    get:
+      summary: 'Get arena verdicts: the 24h cross-chain settlement benchmark'
+      description: 'Wave 6 (The Arena): the public cross-chain x402 settlement benchmark.
+
+
+        Ranks every chain with any signal (pulse transactions in the last 24h,
+
+        tracked merchants, or facilitator network health) by real settle count
+
+        (Wave 8.9: micropayments are a count economy; volume only breaks ties).
+
+        Cached 60s. Honest by construction: with zero pulse data in the
+
+        window the narrative says the arena is still gathering its first data
+
+        and no leader is named. Wave 39 (Il Biglietto da Visita): the optional
+
+        ?network= slug narrows the benchmark to one chain (cached separately
+
+        per slug); an unknown slug is an honest 400 listing the valid slugs. Paid: $0.004 on Algorand / $0.005 on Base, via x402 (per call in USDC on algorand-mainnet or base-mainnet; the 402 response lists every active rail). The POST /v1/watch 7-day diagnostic tier pays the same per-call rail price as the 30-day watch.'
+      operationId: arena_v1_arena_get
+      parameters:
+      - name: network
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: string
+            maxLength: 64
+          - type: 'null'
+          description: 'Optional chain slug filter, e.g. ?network=base-mainnet: the benchmark is narrowed to that one network. Omit it for the full cross-chain arena. An unknown slug is an honest 400 listing the slugs currently benchmarked.'
+          title: Network
+        description: 'Optional chain slug filter, e.g. ?network=base-mainnet: the benchmark is narrowed to that one network. Omit it for the full cross-chain arena. An unknown slug is an honest 400 listing the slugs currently benchmarked.'
+        examples:
+          single_network:
+            summary: Benchmark one chain (Base)
+            value: base-mainnet
+          algorand_only:
+            summary: Benchmark Algorand only
+            value: algorand-mainnet
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                type: object
+                title: Response Arena V1 Arena Get
+              example:
+                generated_at: '2026-01-01T00:00:00+00:00'
+                window_hours: 24
+                chains:
+                - network: base-mainnet
+                  network_name: Base
+                  chain_family: evm
+                  tx_count_24h: 150
+                  settles_24h: 120
+                  settles_facilitator_24h: 118
+                  settles_onchain_24h: 2
+                  large_inflows_24h: 0
+                  verifies_24h: 30
+                  volume_usdc_24h: 61.25
+                  avg_ticket_usdc_24h: 0.51
+                  merchants_tracked: 8
+                  avg_trust_score: 76.4
+                  latency_p50_ms: 240.0
+                  avg_settlement_time: 2s
+                  rank: 1
+                large_inflows_24h: 0
+                leader: base-mainnet
+                narrative: 'Base leads x402 settlement: 120 settles totaling 61.25 USDC in 24h.'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+        '402':
+          description: 'Payment required: the body is an x402 PaymentRequired document (x402Version, error, resource, accepts) listing the USDC payment offers for every active rail; retry with a payment payload.'
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  x402Version:
+                    type: integer
+                  error:
+                    type: string
+                  resource:
+                    type: object
+                  accepts:
+                    type: array
+                    items:
+                      type: object
+      x-payment-info:
+        price:
+          mode: fixed
+          currency: USD
+          amount: '0.004'
+        protocols:
+        - x402: {}
+      tags:
+      - Arena
+  /v1/arena/preview:
+    get:
+      summary: Preview the settlement arena for free
+      description: 'Wave 16: the FREE trimmed arena snapshot for the public homepage.
+
+
+        Same groups/structure the dashboard needs to render the arena doors,
+
+        every indexed chain included and stripped to the rendered fields.
+
+        Explicitly free tier (never in DEFAULT_PREMIUM_PATHS), cached 60s both
+
+        in-process and via Cache-Control. Built from the same assembly as the
+
+        premium /v1/arena so the two views can never disagree about the facts.'
+      operationId: arena_preview_v1_arena_preview_get
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                type: object
+                title: Response Arena Preview V1 Arena Preview Get
+      security: []
+      tags:
+      - Arena
+components:
+  schemas:
+    HTTPValidationError:
+      properties:
+        detail:
+          items:
+            $ref: '#/components/schemas/ValidationError'
+          type: array
+          title: Detail
+      type: object
+      title: HTTPValidationError
+    ValidationError:
+      properties:
+        loc:
+          items:
+            anyOf:
+            - type: string
+            - type: integer
+          type: array
+          title: Location
+        msg:
+          type: string
+          title: Message
+        type:
+          type: string
+          title: Error Type
+      type: object
+      required:
+      - loc
+      - msg
+      - type
+      title: ValidationError
+x-refined-from:
+- gonna-bond-legit-openapi-original.json
+- gonna-bond-legit-openapi.yml

@@ -1,0 +1,187 @@
+openapi: 3.2.0
+info:
+  title: Gonna Bond Watch API
+  version: 0.1.0
+  contact:
+    name: GONNA
+    url: https://gonna.bond/gonnaverse/
+    email: legit@gonna.bond
+  x-guidance: 'LEGIT is the trust and routing layer for the x402 agentic economy. Trust-check any x402 merchant address on Algorand, Base, Solana or 17 other chains before routing a payment: grades (A+ to F) and scores (0-100) come from live uptime, latency and payment-coherence probes, never self-reported data. Run as a pre-payment trust check: call GET /v1/check/{address} before any x402 payment to an address you have not paid before. Start FREE: GET /v1/check/{address} (full trust report), /v1/leaderboard (ranked shortlist), /v1/trending, /v1/pulse, /v1/arena/preview. Paid per call in USDC over x402: GET /v1/compare (2-5 merchants head-to-head), /v1/arena (24h cross-chain settlement benchmark, ?network= filter), /v1/history?address=... (30-day trust trend), POST /v1/watch (7- or 30-day change sentinel, webhook-armed), POST /v1/deep-check (due diligence, up to 10 addresses). How to pay: call a paid endpoint without paying and it answers 402 with a PaymentRequired document listing every active rail; pay one rail and retry with the PAYMENT-SIGNATURE header. Rails cheapest first: algorand-mainnet $0.004, base-mainnet and solana-mainnet $0.005 per call. Watch companions GET /v1/watches/{watch_id} and /v1/watches/{watch_id}/events are FREE: the watch id is the bearer capability for status and the event feed. Webhook payload anatomy: /docs; agent manifest: /llms.txt. Use LEGIT before sending an x402 payment to an unknown merchant, before accepting a counterparty in agent-to-agent settlement, or to monitor a critical upstream for trust degradation.'
+  x-logo:
+    url: https://legit.gonna.bond/favicon.png
+  description: 'Operations tagged Watch across 2 of this provider''s published API definitions: gonna-bond-legit-openapi-original.json, gonna-bond-legit-openapi.yml. Each path carries the servers of the definition it was published in.'
+tags:
+- name: Watch
+paths:
+  /v1/watch:
+    post:
+      summary: Set a webhook-armed 7- or 30-day watch sentinel that fires on grade transitions
+      description: 'Put a sentinel on one x402 merchant for 7 or 30 days.
+
+
+        The optional ``days`` field selects the duration tier: 7 (the
+
+        diagnostic tier) or 30 (the standard, also the default when days is
+
+        omitted, overridable operator-side via LEGIT_WATCH_TTL_DAYS). The
+
+        tier is a duration only: the 7-day diagnostic tier pays the same
+
+        rail price as the 30-day watch; differentiated pricing requires a
+
+        payments.py change (sealed).
+
+
+        After every indexing cycle LEGIT compares the merchant''s freshest
+
+        trust score and probe outcome against the watch''s recorded state and
+
+        records the real transitions: grade changes, score drops beyond the
+
+        LEGIT_WATCH_SCORE_DROP threshold (default 10 points), outages (3 or
+
+        more probes attempted with zero successes) and recoveries. The
+
+        returned watch id is the bearer capability: whoever holds it reads
+
+        status and the newest-first event feed FREE at
+
+        /v1/watches/{watch_id} and /v1/watches/{watch_id}/events. Pass an
+
+        https webhook_url to have every event POSTed to your agent the moment
+
+        it fires (best effort, never retried). Untracked addresses get an
+
+        honest 404 with a pointer to /v1/check; when the active-watch cap is
+
+        reached the answer is an honest 409, never a silently dropped watch. Paid: $0.004 on Algorand / $0.005 on Base, via x402 (per call in USDC on algorand-mainnet or base-mainnet; the 402 response lists every active rail). The POST /v1/watch 7-day diagnostic tier pays the same per-call rail price as the 30-day watch.'
+      operationId: create_watch_v1_watch_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                address:
+                  type: string
+                  minLength: 1
+                  maxLength: 300
+                  description: Merchant address to put a sentinel on. Untracked addresses are an honest 404 with a /v1/check pointer.
+                  example: G7V7U7H6IYRP7BIZO2KV6ODGQPESMMRDCWBYT3GIMNHTNK3VCKWSSKD55A
+                days:
+                  type: integer
+                  enum:
+                  - 7
+                  - 30
+                  description: 'Optional duration tier: 7 (diagnostic) or 30 (standard, the default when omitted). Both tiers pay the same per-call rail price; the tier only sets the watch expiry.'
+                  example: 30
+                webhook_url:
+                  type: string
+                  maxLength: 2000
+                  description: 'Optional https:// URL: every watch event is POSTed to it the moment it fires (best effort, never retried).'
+                  example: https://agent.example/hooks/legit
+              required:
+              - address
+            examples:
+              plain_watch:
+                summary: Watch one merchant, poll the free event feed
+                value:
+                  address: G7V7U7H6IYRP7BIZO2KV6ODGQPESMMRDCWBYT3GIMNHTNK3VCKWSSKD55A
+              webhook_watch:
+                summary: Watch one merchant with an https webhook
+                value:
+                  address: G7V7U7H6IYRP7BIZO2KV6ODGQPESMMRDCWBYT3GIMNHTNK3VCKWSSKD55A
+                  webhook_url: https://agent.example/hooks/legit
+              diagnostic_watch:
+                summary: Watch one merchant for the 7-day diagnostic tier
+                value:
+                  address: G7V7U7H6IYRP7BIZO2KV6ODGQPESMMRDCWBYT3GIMNHTNK3VCKWSSKD55A
+                  days: 7
+        required: true
+      responses:
+        '201':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                type: object
+                title: Response Create Watch V1 Watch Post
+              example:
+                watch_id: 9f1c2a4b6d8e4f0a1b3c5d7e9f0a1b2c
+                address: G7V7U7H6IYRP7BIZO2KV6ODGQPESMMRDCWBYT3GIMNHTNK3VCKWSSKD55A
+                network: algorand-mainnet
+                created_at: '2026-08-10T00:00:00'
+                expires_at: '2026-09-09T00:00:00'
+                ttl_days: 30
+                webhook_configured: true
+                initial:
+                  score: 97.4
+                  grade: A+
+                capability: 'The watch id is the bearer capability: read status and events FREE at GET /v1/watches/{watch_id} and GET /v1/watches/{watch_id}/events.'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+        '402':
+          description: 'Payment required: the body is an x402 PaymentRequired document (x402Version, error, resource, accepts) listing the USDC payment offers for every active rail; retry with a payment payload.'
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  x402Version:
+                    type: integer
+                  error:
+                    type: string
+                  resource:
+                    type: object
+                  accepts:
+                    type: array
+                    items:
+                      type: object
+      x-payment-info:
+        price:
+          mode: fixed
+          currency: USD
+          amount: '0.004'
+        protocols:
+        - x402: {}
+      tags:
+      - Watch
+components:
+  schemas:
+    HTTPValidationError:
+      properties:
+        detail:
+          items:
+            $ref: '#/components/schemas/ValidationError'
+          type: array
+          title: Detail
+      type: object
+      title: HTTPValidationError
+    ValidationError:
+      properties:
+        loc:
+          items:
+            anyOf:
+            - type: string
+            - type: integer
+          type: array
+          title: Location
+        msg:
+          type: string
+          title: Message
+        type:
+          type: string
+          title: Error Type
+      type: object
+      required:
+      - loc
+      - msg
+      - type
+      title: ValidationError
+x-refined-from:
+- gonna-bond-legit-openapi-original.json
+- gonna-bond-legit-openapi.yml

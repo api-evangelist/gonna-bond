@@ -1,0 +1,198 @@
+openapi: 3.2.0
+info:
+  title: Gonna Bond History API
+  version: 0.1.0
+  contact:
+    name: GONNA
+    url: https://gonna.bond/gonnaverse/
+    email: legit@gonna.bond
+  x-guidance: 'LEGIT is the trust and routing layer for the x402 agentic economy. Trust-check any x402 merchant address on Algorand, Base, Solana or 17 other chains before routing a payment: grades (A+ to F) and scores (0-100) come from live uptime, latency and payment-coherence probes, never self-reported data. Run as a pre-payment trust check: call GET /v1/check/{address} before any x402 payment to an address you have not paid before. Start FREE: GET /v1/check/{address} (full trust report), /v1/leaderboard (ranked shortlist), /v1/trending, /v1/pulse, /v1/arena/preview. Paid per call in USDC over x402: GET /v1/compare (2-5 merchants head-to-head), /v1/arena (24h cross-chain settlement benchmark, ?network= filter), /v1/history?address=... (30-day trust trend), POST /v1/watch (7- or 30-day change sentinel, webhook-armed), POST /v1/deep-check (due diligence, up to 10 addresses). How to pay: call a paid endpoint without paying and it answers 402 with a PaymentRequired document listing every active rail; pay one rail and retry with the PAYMENT-SIGNATURE header. Rails cheapest first: algorand-mainnet $0.004, base-mainnet and solana-mainnet $0.005 per call. Watch companions GET /v1/watches/{watch_id} and /v1/watches/{watch_id}/events are FREE: the watch id is the bearer capability for status and the event feed. Webhook payload anatomy: /docs; agent manifest: /llms.txt. Use LEGIT before sending an x402 payment to an unknown merchant, before accepting a counterparty in agent-to-agent settlement, or to monitor a critical upstream for trust degradation.'
+  x-logo:
+    url: https://legit.gonna.bond/favicon.png
+  description: 'Operations tagged History across 2 of this provider''s published API definitions: gonna-bond-legit-openapi-original.json, gonna-bond-legit-openapi.yml. Each path carries the servers of the definition it was published in.'
+tags:
+- name: History
+paths:
+  /v1/history:
+    get:
+      summary: Pull 30-day score history of one merchant for trend analysis
+      description: 'Thirty days of trust history for one x402 merchant.
+
+
+        The daily series combines the surviving daily probe rollups and the
+
+        raw probes still inside the retention window (sample counts, uptime,
+
+        latency avg/min/max) with the daily average/min/max trust score and
+
+        modal grade from LEGIT''s score history. Every day carries a lean
+
+        "meta" block (coverage, provenance, and gap_kind only when a
+
+        measured day has no score row) so an agent can tell a rollup-backed
+
+        day from a raw-only day and a compaction hole from a scoring gap.
+
+        coverage describes measurement completeness, not score completeness.
+
+        A day can be coverage: complete with score: absent when probes ran
+
+        but scoring did not.
+
+        The current snapshot adds the
+
+        latest score, grade, probe tier, 7d and 30d uptime and the median
+
+        latency. One call answers the question every buyer asks before
+
+        integrating: is this merchant getting better or worse? Untracked
+
+        addresses get an honest 404; a tracked merchant stale for its probe
+
+        tier queues an on-demand re-probe, disclosed in the response.
+
+
+        Wave 41c (Il Cliente Cieco): ``address`` is optional. A blind client
+
+        (one that paid and calls with no parameters) gets the history of the
+
+        rank-1 merchant of the current default ranking, with the additive
+
+        ``defaults_applied`` field disclosing the choice; when the ranking
+
+        holds no real merchant no sensible default exists and the parameter
+
+        stays honestly required (self-documenting 422). Paid: $0.004 on Algorand / $0.005 on Base, via x402 (per call in USDC on algorand-mainnet or base-mainnet; the 402 response lists every active rail). The POST /v1/watch 7-day diagnostic tier pays the same per-call rail price as the 30-day watch.'
+      operationId: history_v1_history_get
+      parameters:
+      - name: address
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: string
+            minLength: 1
+            maxLength: 300
+          - type: 'null'
+          description: 'Merchant address (or base URL) exactly as tracked by LEGIT, e.g. ?address=ADDR. Optional: when omitted, the rank-1 merchant of the current default ranking is used and the choice is disclosed in defaults_applied.'
+          title: Address
+        description: 'Merchant address (or base URL) exactly as tracked by LEGIT, e.g. ?address=ADDR. Optional: when omitted, the rank-1 merchant of the current default ranking is used and the choice is disclosed in defaults_applied.'
+        examples:
+          algorand_address:
+            summary: 30-day history of one Algorand merchant
+            value: G7V7U7H6IYRP7BIZO2KV6ODGQPESMMRDCWBYT3GIMNHTNK3VCKWSSKD55A
+      responses:
+        '200':
+          description: The merchant's 30-day trust history and current snapshot.
+          content:
+            application/json:
+              schema:
+                type: object
+                title: Response History V1 History Get
+              example:
+                generated_at: '2026-08-10T00:00:00'
+                address: G7V7U7H6IYRP7BIZO2KV6ODGQPESMMRDCWBYT3GIMNHTNK3VCKWSSKD55A
+                name: AlgoPay Gateway
+                network: algorand-mainnet
+                explorer_url: https://allo.info/account/G7V7U7H6IYRP7BIZO2KV6ODGQPESMMRDCWBYT3GIMNHTNK3VCKWSSKD55A
+                tracked: true
+                window_days: 30
+                current:
+                  score: 97.4
+                  grade: A+
+                  provisional: false
+                  tier: settling
+                  uptime_pct_7d: 99.8
+                  uptime_pct_30d: 99.5
+                  latency_p50_ms: 118.0
+                  sample_size: 512
+                  last_probe_at: '2026-08-09T23:45:00'
+                series:
+                - day: '2026-08-09'
+                  sample_count: 24
+                  ok_count: 24
+                  uptime_pct: 100.0
+                  latency_avg_ms: 121.4
+                  latency_min_ms: 98.0
+                  latency_max_ms: 210.0
+                  score_avg: 97.4
+                  score_min: 97.1
+                  score_max: 97.8
+                  grade: A+
+                  meta:
+                    coverage: partial
+                    provenance:
+                      measurements: raw
+                      score: score_table
+                backstop:
+                  queued: false
+                  note: merchant is fresh for its probe tier
+        '404':
+          description: 'The address is not tracked by LEGIT: an honest 404, never an invented series.'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+        '402':
+          description: 'Payment required: the body is an x402 PaymentRequired document (x402Version, error, resource, accepts) listing the USDC payment offers for every active rail; retry with a payment payload.'
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  x402Version:
+                    type: integer
+                  error:
+                    type: string
+                  resource:
+                    type: object
+                  accepts:
+                    type: array
+                    items:
+                      type: object
+      x-payment-info:
+        price:
+          mode: fixed
+          currency: USD
+          amount: '0.004'
+        protocols:
+        - x402: {}
+      tags:
+      - History
+components:
+  schemas:
+    HTTPValidationError:
+      properties:
+        detail:
+          items:
+            $ref: '#/components/schemas/ValidationError'
+          type: array
+          title: Detail
+      type: object
+      title: HTTPValidationError
+    ValidationError:
+      properties:
+        loc:
+          items:
+            anyOf:
+            - type: string
+            - type: integer
+          type: array
+          title: Location
+        msg:
+          type: string
+          title: Message
+        type:
+          type: string
+          title: Error Type
+      type: object
+      required:
+      - loc
+      - msg
+      - type
+      title: ValidationError
+x-refined-from:
+- gonna-bond-legit-openapi-original.json
+- gonna-bond-legit-openapi.yml

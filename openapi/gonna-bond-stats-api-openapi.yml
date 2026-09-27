@@ -1,0 +1,134 @@
+openapi: 3.2.0
+info:
+  title: Gonna Bond Stats API
+  version: 0.1.0
+  contact:
+    name: GONNA
+    url: https://gonna.bond/gonnaverse/
+    email: legit@gonna.bond
+  x-guidance: 'LEGIT is the trust and routing layer for the x402 agentic economy. Trust-check any x402 merchant address on Algorand, Base, Solana or 17 other chains before routing a payment: grades (A+ to F) and scores (0-100) come from live uptime, latency and payment-coherence probes, never self-reported data. Run as a pre-payment trust check: call GET /v1/check/{address} before any x402 payment to an address you have not paid before. Start FREE: GET /v1/check/{address} (full trust report), /v1/leaderboard (ranked shortlist), /v1/trending, /v1/pulse, /v1/arena/preview. Paid per call in USDC over x402: GET /v1/compare (2-5 merchants head-to-head), /v1/arena (24h cross-chain settlement benchmark, ?network= filter), /v1/history?address=... (30-day trust trend), POST /v1/watch (7- or 30-day change sentinel, webhook-armed), POST /v1/deep-check (due diligence, up to 10 addresses). How to pay: call a paid endpoint without paying and it answers 402 with a PaymentRequired document listing every active rail; pay one rail and retry with the PAYMENT-SIGNATURE header. Rails cheapest first: algorand-mainnet $0.004, base-mainnet and solana-mainnet $0.005 per call. Watch companions GET /v1/watches/{watch_id} and /v1/watches/{watch_id}/events are FREE: the watch id is the bearer capability for status and the event feed. Webhook payload anatomy: /docs; agent manifest: /llms.txt. Use LEGIT before sending an x402 payment to an unknown merchant, before accepting a counterparty in agent-to-agent settlement, or to monitor a critical upstream for trust degradation.'
+  x-logo:
+    url: https://legit.gonna.bond/favicon.png
+  description: 'Operations tagged Stats across 2 of this provider''s published API definitions: gonna-bond-legit-openapi-original.json, gonna-bond-legit-openapi.yml. Each path carries the servers of the definition it was published in.'
+tags:
+- name: Stats
+paths:
+  /v1/stats:
+    get:
+      summary: Read headline service stats and storage facts
+      description: 'Headline service stats: merchant and measurement counts, average
+
+        trust score and verifiable storage facts (FREE, cached 30s).'
+      operationId: stats_v1_stats_get
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Stats'
+      security: []
+      tags:
+      - Stats
+components:
+  schemas:
+    StorageInfo:
+      properties:
+        path:
+          type: string
+          title: Path
+        persistent:
+          type: boolean
+          title: Persistent
+        db_bytes:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Db Bytes
+        retention_days:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Retention Days
+        tables:
+          anyOf:
+          - type: object
+          - type: 'null'
+          title: Tables
+        tables_bytes:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Tables Bytes
+      type: object
+      required:
+      - path
+      - persistent
+      title: StorageInfo
+      description: 'Wave 8.6: verifiable storage facts (resolved SQLite path + whether it
+
+        lives on the persistent volume).
+
+
+        Wave 40 (The Diet): disk observability -- ``db_bytes`` is the
+
+        on-disk size of the DB file (null when unreadable) and
+
+        ``retention_days`` the raw-measurement retention window actually in
+
+        force (older history survives as daily rollups, not raw rows).
+
+
+        Wave 41 (La Bellezza, W6): growth introspection -- ``tables`` maps
+
+        each main table to its real row count (plus ``bytes`` when SQLite''s
+
+        dbstat virtual table is compiled in). ``tables_bytes`` names the
+
+        bytes source ("dbstat") or is null, in which case entries honestly
+
+        carry row counts only.
+
+
+        Wave 43 (La Grande Dieta, D5): table entries additionally carry
+
+        ``index_bytes`` (that table''s index pages via dbstat, additive) when
+
+        dbstat is available -- ``bytes`` alone under-reported the real
+
+        on-disk cost per table by 1.4x-2.9x.'
+    Stats:
+      properties:
+        merchants:
+          type: integer
+          title: Merchants
+        merchants_testnet:
+          type: integer
+          title: Merchants Testnet
+          default: 0
+        merchants_mainnet:
+          type: integer
+          title: Merchants Mainnet
+          default: 0
+        merchants_active:
+          type: integer
+          title: Merchants Active
+          default: 0
+        measurements:
+          type: integer
+          title: Measurements
+        avg_score:
+          type: number
+          title: Avg Score
+        storage:
+          $ref: '#/components/schemas/StorageInfo'
+      type: object
+      required:
+      - merchants
+      - measurements
+      - avg_score
+      - storage
+      title: Stats
+x-refined-from:
+- gonna-bond-legit-openapi-original.json
+- gonna-bond-legit-openapi.yml

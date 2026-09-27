@@ -1,0 +1,159 @@
+openapi: 3.2.0
+info:
+  title: Gonna Bond Batch Check API
+  version: 0.1.0
+  contact:
+    name: GONNA
+    url: https://gonna.bond/gonnaverse/
+    email: legit@gonna.bond
+  x-guidance: 'LEGIT is the trust and routing layer for the x402 agentic economy. Trust-check any x402 merchant address on Algorand, Base, Solana or 17 other chains before routing a payment: grades (A+ to F) and scores (0-100) come from live uptime, latency and payment-coherence probes, never self-reported data. Run as a pre-payment trust check: call GET /v1/check/{address} before any x402 payment to an address you have not paid before. Start FREE: GET /v1/check/{address} (full trust report), /v1/leaderboard (ranked shortlist), /v1/trending, /v1/pulse, /v1/arena/preview. Paid per call in USDC over x402: GET /v1/compare (2-5 merchants head-to-head), /v1/arena (24h cross-chain settlement benchmark, ?network= filter), /v1/history?address=... (30-day trust trend), POST /v1/watch (7- or 30-day change sentinel, webhook-armed), POST /v1/deep-check (due diligence, up to 10 addresses). How to pay: call a paid endpoint without paying and it answers 402 with a PaymentRequired document listing every active rail; pay one rail and retry with the PAYMENT-SIGNATURE header. Rails cheapest first: algorand-mainnet $0.004, base-mainnet and solana-mainnet $0.005 per call. Watch companions GET /v1/watches/{watch_id} and /v1/watches/{watch_id}/events are FREE: the watch id is the bearer capability for status and the event feed. Webhook payload anatomy: /docs; agent manifest: /llms.txt. Use LEGIT before sending an x402 payment to an unknown merchant, before accepting a counterparty in agent-to-agent settlement, or to monitor a critical upstream for trust degradation.'
+  x-logo:
+    url: https://legit.gonna.bond/favicon.png
+  description: 'Operations tagged Batch Check across 2 of this provider''s published API definitions: gonna-bond-legit-openapi-original.json, gonna-bond-legit-openapi.yml. Each path carries the servers of the definition it was published in.'
+tags:
+- name: Batch Check
+paths:
+  /v1/batch-check:
+    post:
+      summary: Batch-check multiple addresses in one call
+      description: 'Trust-report-lite for 1..20 validated addresses in one call.
+
+
+        FREE (rate limited). Fabricated demo entries require the explicit
+
+        ``?demo=true`` opt-in; when any are included the response is flagged
+
+        ``demo: true`` at the top level and per entry.'
+      operationId: batch_check_v1_batch_check_post
+      parameters:
+      - name: demo
+        in: query
+        required: false
+        schema:
+          type: boolean
+          description: 'Opt-in demo mode: demo addresses resolve to the fabricated illustration entries flagged demo=true. Off by default.'
+          default: false
+          title: Demo
+        description: 'Opt-in demo mode: demo addresses resolve to the fabricated illustration entries flagged demo=true. Off by default.'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                addresses:
+                  type: array
+                  items:
+                    type: string
+                    maxLength: 300
+                  minItems: 1
+                  maxItems: 20
+                  description: 1 to 20 merchant addresses or base URLs, each validated like /v1/check. Untracked addresses get an honest unrated report, never an invented score.
+                  example:
+                  - G7V7U7H6IYRP7BIZO2KV6ODGQPESMMRDCWBYT3GIMNHTNK3VCKWSSKD55A
+              required:
+              - addresses
+            example:
+              addresses:
+              - G7V7U7H6IYRP7BIZO2KV6ODGQPESMMRDCWBYT3GIMNHTNK3VCKWSSKD55A
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BatchReport'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+      security: []
+      tags:
+      - Batch Check
+components:
+  schemas:
+    HTTPValidationError:
+      properties:
+        detail:
+          items:
+            $ref: '#/components/schemas/ValidationError'
+          type: array
+          title: Detail
+      type: object
+      title: HTTPValidationError
+    BatchReport:
+      properties:
+        generated_at:
+          type: string
+          title: Generated At
+        results:
+          items:
+            $ref: '#/components/schemas/TrustReportLite'
+          type: array
+          title: Results
+        demo:
+          type: boolean
+          title: Demo
+          default: false
+      type: object
+      required:
+      - generated_at
+      - results
+      title: BatchReport
+    TrustReportLite:
+      properties:
+        address:
+          type: string
+          title: Address
+        score:
+          type: number
+          title: Score
+        grade:
+          type: string
+          title: Grade
+        latency_p50_ms:
+          type: number
+          title: Latency P50 Ms
+        uptime_pct:
+          type: number
+          title: Uptime Pct
+        demo:
+          type: boolean
+          title: Demo
+          default: false
+      type: object
+      required:
+      - address
+      - score
+      - grade
+      - latency_p50_ms
+      - uptime_pct
+      title: TrustReportLite
+      description: Compact per-address result inside a BatchReport.
+    ValidationError:
+      properties:
+        loc:
+          items:
+            anyOf:
+            - type: string
+            - type: integer
+          type: array
+          title: Location
+        msg:
+          type: string
+          title: Message
+        type:
+          type: string
+          title: Error Type
+      type: object
+      required:
+      - loc
+      - msg
+      - type
+      title: ValidationError
+x-refined-from:
+- gonna-bond-legit-openapi-original.json
+- gonna-bond-legit-openapi.yml

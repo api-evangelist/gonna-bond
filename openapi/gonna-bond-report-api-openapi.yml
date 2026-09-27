@@ -1,0 +1,209 @@
+openapi: 3.2.0
+info:
+  title: Gonna Bond Report API
+  version: 0.1.0
+  contact:
+    name: GONNA
+    url: https://gonna.bond/gonnaverse/
+    email: legit@gonna.bond
+  x-guidance: 'LEGIT is the trust and routing layer for the x402 agentic economy. Trust-check any x402 merchant address on Algorand, Base, Solana or 17 other chains before routing a payment: grades (A+ to F) and scores (0-100) come from live uptime, latency and payment-coherence probes, never self-reported data. Run as a pre-payment trust check: call GET /v1/check/{address} before any x402 payment to an address you have not paid before. Start FREE: GET /v1/check/{address} (full trust report), /v1/leaderboard (ranked shortlist), /v1/trending, /v1/pulse, /v1/arena/preview. Paid per call in USDC over x402: GET /v1/compare (2-5 merchants head-to-head), /v1/arena (24h cross-chain settlement benchmark, ?network= filter), /v1/history?address=... (30-day trust trend), POST /v1/watch (7- or 30-day change sentinel, webhook-armed), POST /v1/deep-check (due diligence, up to 10 addresses). How to pay: call a paid endpoint without paying and it answers 402 with a PaymentRequired document listing every active rail; pay one rail and retry with the PAYMENT-SIGNATURE header. Rails cheapest first: algorand-mainnet $0.004, base-mainnet and solana-mainnet $0.005 per call. Watch companions GET /v1/watches/{watch_id} and /v1/watches/{watch_id}/events are FREE: the watch id is the bearer capability for status and the event feed. Webhook payload anatomy: /docs; agent manifest: /llms.txt. Use LEGIT before sending an x402 payment to an unknown merchant, before accepting a counterparty in agent-to-agent settlement, or to monitor a critical upstream for trust degradation.'
+  x-logo:
+    url: https://legit.gonna.bond/favicon.png
+  description: 'Operations tagged Report across 2 of this provider''s published API definitions: gonna-bond-legit-openapi-original.json, gonna-bond-legit-openapi.yml. Each path carries the servers of the definition it was published in.'
+tags:
+- name: Report
+paths:
+  /v1/report/{address}:
+    get:
+      summary: Pull the full trust report of one merchant before integrating
+      description: 'Deep report: full breakdown, 30-row score history, rank and percentile.
+
+
+        FREE (rate limited). Unknown addresses get an honest unrated report.
+
+        The fabricated demo report requires the explicit ``?demo=true`` opt-in.'
+      operationId: report_v1_report__address__get
+      parameters:
+      - name: address
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Address
+      - name: demo
+        in: query
+        required: false
+        schema:
+          type: boolean
+          description: 'Opt-in demo mode: for the five hardcoded demo addresses, return the fabricated illustration report flagged demo=true. Off by default: fabricated data is never served unmarked.'
+          default: false
+          title: Demo
+        description: 'Opt-in demo mode: for the five hardcoded demo addresses, return the fabricated illustration report flagged demo=true. Off by default: fabricated data is never served unmarked.'
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DeepReport'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+      security: []
+      tags:
+      - Report
+components:
+  schemas:
+    DeepReport:
+      properties:
+        address:
+          type: string
+          title: Address
+        name:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Name
+        score:
+          type: number
+          title: Score
+        grade:
+          type: string
+          title: Grade
+        breakdown:
+          $ref: '#/components/schemas/ScoreBreakdown'
+        history:
+          items:
+            $ref: '#/components/schemas/ScorePoint'
+          type: array
+          title: History
+        rank:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Rank
+        percentile:
+          type: number
+          title: Percentile
+          default: 0.0
+        networks_served:
+          items:
+            type: string
+          type: array
+          title: Networks Served
+        generated_at:
+          type: string
+          title: Generated At
+        measurement_window_days:
+          type: integer
+          title: Measurement Window Days
+          default: 30
+        demo:
+          type: boolean
+          title: Demo
+          default: false
+      type: object
+      required:
+      - address
+      - score
+      - grade
+      - breakdown
+      - generated_at
+      title: DeepReport
+      description: Deep trust report for one merchant (SPEC_V2 contract).
+    HTTPValidationError:
+      properties:
+        detail:
+          items:
+            $ref: '#/components/schemas/ValidationError'
+          type: array
+          title: Detail
+      type: object
+      title: HTTPValidationError
+    ScorePoint:
+      properties:
+        ts:
+          type: string
+          title: Ts
+        score:
+          type: number
+          title: Score
+      type: object
+      required:
+      - ts
+      - score
+      title: ScorePoint
+      description: One historical score snapshot.
+    ScoreBreakdown:
+      properties:
+        uptime_pct:
+          type: number
+          title: Uptime Pct
+        latency_p50_ms:
+          type: number
+          title: Latency P50 Ms
+        success_rate:
+          type: number
+          title: Success Rate
+        coherence:
+          type: number
+          title: Coherence
+        sample_size:
+          type: integer
+          title: Sample Size
+        score:
+          type: number
+          title: Score
+        grade:
+          type: string
+          title: Grade
+        explanation:
+          items:
+            type: string
+          type: array
+          title: Explanation
+        adoption:
+          type: number
+          title: Adoption
+          default: 0.0
+        provisional:
+          type: boolean
+          title: Provisional
+          default: false
+      type: object
+      required:
+      - uptime_pct
+      - latency_p50_ms
+      - success_rate
+      - coherence
+      - sample_size
+      - score
+      - grade
+      title: ScoreBreakdown
+    ValidationError:
+      properties:
+        loc:
+          items:
+            anyOf:
+            - type: string
+            - type: integer
+          type: array
+          title: Location
+        msg:
+          type: string
+          title: Message
+        type:
+          type: string
+          title: Error Type
+      type: object
+      required:
+      - loc
+      - msg
+      - type
+      title: ValidationError
+x-refined-from:
+- gonna-bond-legit-openapi-original.json
+- gonna-bond-legit-openapi.yml

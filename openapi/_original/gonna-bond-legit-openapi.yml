@@ -1,3 +1,5 @@
+# x-archived-from: gonna-bond-legit-openapi.yml
+# x-archived-on: 2026-09-26
 # Faithful YAML serialization of https://legit.gonna.bond/openapi.json as fetched 2026-09-19 (HTTP 200, application/json, 59,922 bytes).
 # Content is unchanged from the provider's document; the verbatim JSON is at openapi/_original/gonna-bond-legit-openapi-original.json.
 # The provider publishes no servers[] block; the base URL https://legit.gonna.bond is recorded in apis.yml from the provider's own llms.txt examples.

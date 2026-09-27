@@ -1,0 +1,183 @@
+openapi: 3.2.0
+info:
+  title: Gonna Bond Deep Check API
+  version: 0.1.0
+  contact:
+    name: GONNA
+    url: https://gonna.bond/gonnaverse/
+    email: legit@gonna.bond
+  x-guidance: 'LEGIT is the trust and routing layer for the x402 agentic economy. Trust-check any x402 merchant address on Algorand, Base, Solana or 17 other chains before routing a payment: grades (A+ to F) and scores (0-100) come from live uptime, latency and payment-coherence probes, never self-reported data. Run as a pre-payment trust check: call GET /v1/check/{address} before any x402 payment to an address you have not paid before. Start FREE: GET /v1/check/{address} (full trust report), /v1/leaderboard (ranked shortlist), /v1/trending, /v1/pulse, /v1/arena/preview. Paid per call in USDC over x402: GET /v1/compare (2-5 merchants head-to-head), /v1/arena (24h cross-chain settlement benchmark, ?network= filter), /v1/history?address=... (30-day trust trend), POST /v1/watch (7- or 30-day change sentinel, webhook-armed), POST /v1/deep-check (due diligence, up to 10 addresses). How to pay: call a paid endpoint without paying and it answers 402 with a PaymentRequired document listing every active rail; pay one rail and retry with the PAYMENT-SIGNATURE header. Rails cheapest first: algorand-mainnet $0.004, base-mainnet and solana-mainnet $0.005 per call. Watch companions GET /v1/watches/{watch_id} and /v1/watches/{watch_id}/events are FREE: the watch id is the bearer capability for status and the event feed. Webhook payload anatomy: /docs; agent manifest: /llms.txt. Use LEGIT before sending an x402 payment to an unknown merchant, before accepting a counterparty in agent-to-agent settlement, or to monitor a critical upstream for trust degradation.'
+  x-logo:
+    url: https://legit.gonna.bond/favicon.png
+  description: 'Operations tagged Deep Check across 2 of this provider''s published API definitions: gonna-bond-legit-openapi-original.json, gonna-bond-legit-openapi.yml. Each path carries the servers of the definition it was published in.'
+tags:
+- name: Deep Check
+paths:
+  /v1/deep-check:
+    post:
+      summary: Run deep-check due diligence on up to 10 addresses
+      description: 'Bulk due diligence for up to 10 x402 merchants in one call.
+
+
+        Every tracked address returns the full trust snapshot with the
+
+        complete parsed score breakdown, a compact 30-day history (daily
+
+        uptime, average score and modal grade), its rank percentile within
+
+        its own network, first/last seen timestamps and its probe tier.
+
+        Untracked addresses are listed honestly under "untracked"; nothing is
+
+        silently dropped and nothing is invented. Tracked merchants stale for
+
+        their probe tier queue an on-demand re-probe each.
+
+
+        Wave 40 (La Voce, W5): Base merchants with at least one real USDC
+
+        settle found by LEGIT''s independent eth_getLogs chain scan over the
+
+        last 7 days carry an additive "evidence" block
+
+        ({"base_usdc_settles_7d": n, "evidence_source":
+
+        "independent_chain_scan"}). It is omitted for everyone else: absence
+
+        of proof is not proof of absence. Metadata only, never a scoring
+
+        input; a scan failure omits the field, never an error. Paid: $0.004 on Algorand / $0.005 on Base, via x402 (per call in USDC on algorand-mainnet or base-mainnet; the 402 response lists every active rail). The POST /v1/watch 7-day diagnostic tier pays the same per-call rail price as the 30-day watch.'
+      operationId: deep_check_v1_deep_check_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                addresses:
+                  type: array
+                  items:
+                    type: string
+                    maxLength: 300
+                  minItems: 1
+                  maxItems: 10
+                  description: 1 to 10 merchant addresses (LEGIT_DEEP_MAX) for bulk due diligence in one call. Untracked addresses are listed honestly under untracked.
+                  example:
+                  - G7V7U7H6IYRP7BIZO2KV6ODGQPESMMRDCWBYT3GIMNHTNK3VCKWSSKD55A
+                  - ZQFL2SVFDQDKFAUCCE2WVXH6EF3LRUUJZLKJMDIED56LODOKW23JSKB7NT
+              required:
+              - addresses
+            examples:
+              two_addresses:
+                summary: Deep-check two merchants before routing
+                value:
+                  addresses:
+                  - G7V7U7H6IYRP7BIZO2KV6ODGQPESMMRDCWBYT3GIMNHTNK3VCKWSSKD55A
+                  - ZQFL2SVFDQDKFAUCCE2WVXH6EF3LRUUJZLKJMDIED56LODOKW23JSKB7NT
+        required: true
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                type: object
+                title: Response Deep Check V1 Deep Check Post
+              example:
+                generated_at: '2026-08-10T00:00:00'
+                max_addresses: 10
+                entries:
+                - address: G7V7U7H6IYRP7BIZO2KV6ODGQPESMMRDCWBYT3GIMNHTNK3VCKWSSKD55A
+                  name: AlgoPay Gateway
+                  network: algorand-mainnet
+                  explorer_url: https://allo.info/account/G7V7U7H6IYRP7BIZO2KV6ODGQPESMMRDCWBYT3GIMNHTNK3VCKWSSKD55A
+                  tracked: true
+                  score: 97.4
+                  grade: A+
+                  provisional: false
+                  breakdown:
+                    uptime_pct: 99.8
+                    latency_p50_ms: 118.0
+                    sample_size: 512
+                    provisional: false
+                  tier: settling
+                  rank_percentile: 92.3
+                  network_size: 14
+                  first_seen: '2026-06-01T12:00:00'
+                  last_seen: '2026-08-09T23:45:00'
+                  last_probe_at: '2026-08-09T23:45:00'
+                  series:
+                  - day: '2026-08-09'
+                    sample_count: 24
+                    uptime_pct: 100.0
+                    score_avg: 97.4
+                    grade: A+
+                untracked:
+                - UNKNOWN_ADDRESS
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+        '402':
+          description: 'Payment required: the body is an x402 PaymentRequired document (x402Version, error, resource, accepts) listing the USDC payment offers for every active rail; retry with a payment payload.'
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  x402Version:
+                    type: integer
+                  error:
+                    type: string
+                  resource:
+                    type: object
+                  accepts:
+                    type: array
+                    items:
+                      type: object
+      x-payment-info:
+        price:
+          mode: fixed
+          currency: USD
+          amount: '0.004'
+        protocols:
+        - x402: {}
+      tags:
+      - Deep Check
+components:
+  schemas:
+    HTTPValidationError:
+      properties:
+        detail:
+          items:
+            $ref: '#/components/schemas/ValidationError'
+          type: array
+          title: Detail
+      type: object
+      title: HTTPValidationError
+    ValidationError:
+      properties:
+        loc:
+          items:
+            anyOf:
+            - type: string
+            - type: integer
+          type: array
+          title: Location
+        msg:
+          type: string
+          title: Message
+        type:
+          type: string
+          title: Error Type
+      type: object
+      required:
+      - loc
+      - msg
+      - type
+      title: ValidationError
+x-refined-from:
+- gonna-bond-legit-openapi-original.json
+- gonna-bond-legit-openapi.yml

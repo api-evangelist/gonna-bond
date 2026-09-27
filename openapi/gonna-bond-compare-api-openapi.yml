@@ -1,0 +1,252 @@
+openapi: 3.2.0
+info:
+  title: Gonna Bond Compare API
+  version: 0.1.0
+  contact:
+    name: GONNA
+    url: https://gonna.bond/gonnaverse/
+    email: legit@gonna.bond
+  x-guidance: 'LEGIT is the trust and routing layer for the x402 agentic economy. Trust-check any x402 merchant address on Algorand, Base, Solana or 17 other chains before routing a payment: grades (A+ to F) and scores (0-100) come from live uptime, latency and payment-coherence probes, never self-reported data. Run as a pre-payment trust check: call GET /v1/check/{address} before any x402 payment to an address you have not paid before. Start FREE: GET /v1/check/{address} (full trust report), /v1/leaderboard (ranked shortlist), /v1/trending, /v1/pulse, /v1/arena/preview. Paid per call in USDC over x402: GET /v1/compare (2-5 merchants head-to-head), /v1/arena (24h cross-chain settlement benchmark, ?network= filter), /v1/history?address=... (30-day trust trend), POST /v1/watch (7- or 30-day change sentinel, webhook-armed), POST /v1/deep-check (due diligence, up to 10 addresses). How to pay: call a paid endpoint without paying and it answers 402 with a PaymentRequired document listing every active rail; pay one rail and retry with the PAYMENT-SIGNATURE header. Rails cheapest first: algorand-mainnet $0.004, base-mainnet and solana-mainnet $0.005 per call. Watch companions GET /v1/watches/{watch_id} and /v1/watches/{watch_id}/events are FREE: the watch id is the bearer capability for status and the event feed. Webhook payload anatomy: /docs; agent manifest: /llms.txt. Use LEGIT before sending an x402 payment to an unknown merchant, before accepting a counterparty in agent-to-agent settlement, or to monitor a critical upstream for trust degradation.'
+  x-logo:
+    url: https://legit.gonna.bond/favicon.png
+  description: 'Operations tagged Compare across 2 of this provider''s published API definitions: gonna-bond-legit-openapi-original.json, gonna-bond-legit-openapi.yml. Each path carries the servers of the definition it was published in.'
+tags:
+- name: Compare
+paths:
+  /v1/compare:
+    get:
+      summary: Compare 2-5 addresses side-by-side before picking one to pay
+      description: 'Compare 2-5 merchant addresses head-to-head (FREE, rate limited).
+
+
+        Returns a TrustReport-like summary per address plus ``winner`` (best
+
+        trust score; Wave 7 ties broken by more real payments settled, then
+
+        lower median latency, then higher sample size) and a plain-English
+
+        ``rationale``. Untracked addresses are included with ``score=null``
+
+        and ``tracked=false``; they cannot win.
+
+
+        Wave 41c (Il Cliente Cieco): ``addresses`` is optional. A blind
+
+        client (one that paid and calls with no parameters) gets the top
+
+        merchants of the current default ranking compared, with the additive
+
+        ``defaults_applied`` field disclosing the choice; when the ranking
+
+        holds too few real merchants no sensible default exists and the
+
+        parameter stays honestly required (self-documenting 422). Paid: $0.004 on Algorand / $0.005 on Base, via x402 (per call in USDC on algorand-mainnet or base-mainnet; the 402 response lists every active rail). The POST /v1/watch 7-day diagnostic tier pays the same per-call rail price as the 30-day watch.'
+      operationId: compare_v1_compare_get
+      parameters:
+      - name: addresses
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: string
+            minLength: 1
+            maxLength: 2000
+          - type: 'null'
+          description: 'Comma-separated merchant addresses (2-5). Optional: when omitted, the top merchants of the current default ranking are compared and the choice is disclosed in defaults_applied.'
+          title: Addresses
+        description: 'Comma-separated merchant addresses (2-5). Optional: when omitted, the top merchants of the current default ranking are compared and the choice is disclosed in defaults_applied.'
+        examples:
+          two_addresses:
+            summary: Compare two Algorand merchant addresses
+            value: G7V7U7H6IYRP7BIZO2KV6ODGQPESMMRDCWBYT3GIMNHTNK3VCKWSSKD55A,ZQFL2SVFDQDKFAUCCE2WVXH6EF3LRUUJZLKJMDIED56LODOKW23JSKB7NT
+          three_addresses:
+            summary: Compare three Algorand merchant addresses
+            value: G7V7U7H6IYRP7BIZO2KV6ODGQPESMMRDCWBYT3GIMNHTNK3VCKWSSKD55A,ZQFL2SVFDQDKFAUCCE2WVXH6EF3LRUUJZLKJMDIED56LODOKW23JSKB7NT,TARTD3TCZERKBTXQQEQED76TGSCBU6SL2QE3Z5K74GKTRCIHFMSIDAOLJP
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CompareResponse'
+              example:
+                generated_at: '2026-01-01T00:00:00+00:00'
+                entries:
+                - address: ADDRESS_A
+                  name: Merchant A
+                  score: 82.5
+                  grade: B
+                  provisional: false
+                  uptime_pct: 99.5
+                  latency_p50_ms: 210.0
+                  sample_size: 12
+                  settle_count: 340
+                  network: algorand-mainnet
+                  explorer_url: https://allo.info/account/ADDRESS_A
+                  tracked: true
+                - address: ADDRESS_B
+                  name: null
+                  score: null
+                  grade: null
+                  provisional: false
+                  uptime_pct: null
+                  latency_p50_ms: null
+                  sample_size: 0
+                  settle_count: 0
+                  network: null
+                  explorer_url: null
+                  tracked: false
+                winner: ADDRESS_A
+                rationale: 'Merchant A wins: highest trust score (82.5 vs 71.0).'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+        '402':
+          description: 'Payment required: the body is an x402 PaymentRequired document (x402Version, error, resource, accepts) listing the USDC payment offers for every active rail; retry with a payment payload.'
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  x402Version:
+                    type: integer
+                  error:
+                    type: string
+                  resource:
+                    type: object
+                  accepts:
+                    type: array
+                    items:
+                      type: object
+      x-payment-info:
+        price:
+          mode: fixed
+          currency: USD
+          amount: '0.004'
+        protocols:
+        - x402: {}
+      tags:
+      - Compare
+components:
+  schemas:
+    HTTPValidationError:
+      properties:
+        detail:
+          items:
+            $ref: '#/components/schemas/ValidationError'
+          type: array
+          title: Detail
+      type: object
+      title: HTTPValidationError
+    CompareEntry:
+      properties:
+        address:
+          type: string
+          title: Address
+        name:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Name
+        score:
+          anyOf:
+          - type: number
+          - type: 'null'
+          title: Score
+        grade:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Grade
+        provisional:
+          type: boolean
+          title: Provisional
+          default: false
+        uptime_pct:
+          anyOf:
+          - type: number
+          - type: 'null'
+          title: Uptime Pct
+        latency_p50_ms:
+          anyOf:
+          - type: number
+          - type: 'null'
+          title: Latency P50 Ms
+        sample_size:
+          type: integer
+          title: Sample Size
+          default: 0
+        settle_count:
+          type: integer
+          title: Settle Count
+          default: 0
+        network:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Network
+        explorer_url:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Explorer Url
+        tracked:
+          type: boolean
+          title: Tracked
+          default: true
+      type: object
+      required:
+      - address
+      title: CompareEntry
+      description: TrustReport-like summary of one address in a comparison.
+    ValidationError:
+      properties:
+        loc:
+          items:
+            anyOf:
+            - type: string
+            - type: integer
+          type: array
+          title: Location
+        msg:
+          type: string
+          title: Message
+        type:
+          type: string
+          title: Error Type
+      type: object
+      required:
+      - loc
+      - msg
+      - type
+      title: ValidationError
+    CompareResponse:
+      properties:
+        generated_at:
+          type: string
+          title: Generated At
+        entries:
+          items:
+            $ref: '#/components/schemas/CompareEntry'
+          type: array
+          title: Entries
+        winner:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Winner
+        rationale:
+          type: string
+          title: Rationale
+      type: object
+      required:
+      - generated_at
+      - entries
+      - rationale
+      title: CompareResponse
+x-refined-from:
+- gonna-bond-legit-openapi-original.json
+- gonna-bond-legit-openapi.yml
