@@ -1,15 +1,15 @@
 openapi: 3.2.0
 info:
-  title: Gonna Bond Compare API
+  title: LEGIT Compare API
+  description: Trust-check any x402 merchant or agent address on Algorand, Base, Solana, or 17 other chains before routing a payment.
   version: 0.1.0
   contact:
     name: GONNA
     url: https://gonna.bond/gonnaverse/
     email: legit@gonna.bond
-  x-guidance: 'LEGIT is the trust and routing layer for the x402 agentic economy. Trust-check any x402 merchant address on Algorand, Base, Solana or 17 other chains before routing a payment: grades (A+ to F) and scores (0-100) come from live uptime, latency and payment-coherence probes, never self-reported data. Run as a pre-payment trust check: call GET /v1/check/{address} before any x402 payment to an address you have not paid before. Start FREE: GET /v1/check/{address} (full trust report), /v1/leaderboard (ranked shortlist), /v1/trending, /v1/pulse, /v1/arena/preview. Paid per call in USDC over x402: GET /v1/compare (2-5 merchants head-to-head), /v1/arena (24h cross-chain settlement benchmark, ?network= filter), /v1/history?address=... (30-day trust trend), POST /v1/watch (7- or 30-day change sentinel, webhook-armed), POST /v1/deep-check (due diligence, up to 10 addresses). How to pay: call a paid endpoint without paying and it answers 402 with a PaymentRequired document listing every active rail; pay one rail and retry with the PAYMENT-SIGNATURE header. Rails cheapest first: algorand-mainnet $0.004, base-mainnet and solana-mainnet $0.005 per call. Watch companions GET /v1/watches/{watch_id} and /v1/watches/{watch_id}/events are FREE: the watch id is the bearer capability for status and the event feed. Webhook payload anatomy: /docs; agent manifest: /llms.txt. Use LEGIT before sending an x402 payment to an unknown merchant, before accepting a counterparty in agent-to-agent settlement, or to monitor a critical upstream for trust degradation.'
   x-logo:
     url: https://legit.gonna.bond/favicon.png
-  description: 'Operations tagged Compare across 2 of this provider''s published API definitions: gonna-bond-legit-openapi-original.json, gonna-bond-legit-openapi.yml. Each path carries the servers of the definition it was published in.'
+  x-guidance: 'LEGIT is the trust and routing layer for the x402 agentic economy. Trust-check any x402 merchant address on Algorand, Base, Solana or 17 other chains before routing a payment: grades (A+ to F) and scores (0-100) come from live uptime, latency and payment-coherence probes, never self-reported data. Run as a pre-payment trust check: call GET /v1/check/{address} before any x402 payment to an address you have not paid before. Start FREE: GET /v1/check/{address} (full trust report), /v1/leaderboard (ranked shortlist), /v1/trending, /v1/pulse, /v1/arena/preview. Paid per call in USDC over x402: GET /v1/compare (2-5 merchants head-to-head), /v1/arena (24h cross-chain settlement benchmark, ?network= filter), /v1/history?address=... (30-day trust trend), POST /v1/watch (7- or 30-day change sentinel, webhook-armed), POST /v1/deep-check (due diligence, up to 10 addresses). How to pay: call a paid endpoint without paying and it answers 402 with a PaymentRequired document listing every active rail; pay one rail and retry with the PAYMENT-SIGNATURE header. Rails cheapest first: algorand-mainnet $0.004, base-mainnet and solana-mainnet $0.005 per call. Watch companions GET /v1/watches/{watch_id} and /v1/watches/{watch_id}/events are FREE: the watch id is the bearer capability for status and the event feed. Webhook payload anatomy: /docs; agent manifest: /llms.txt. Use LEGIT before sending an x402 payment to an unknown merchant, before accepting a counterparty in agent-to-agent settlement, or to monitor a critical upstream for trust degradation.'
 tags:
 - name: Compare
 paths:
@@ -132,15 +132,51 @@ paths:
       - Compare
 components:
   schemas:
-    HTTPValidationError:
+    ValidationError:
       properties:
-        detail:
+        loc:
           items:
-            $ref: '#/components/schemas/ValidationError'
+            anyOf:
+            - type: string
+            - type: integer
           type: array
-          title: Detail
+          title: Location
+        msg:
+          type: string
+          title: Message
+        type:
+          type: string
+          title: Error Type
       type: object
-      title: HTTPValidationError
+      required:
+      - loc
+      - msg
+      - type
+      title: ValidationError
+    CompareResponse:
+      properties:
+        generated_at:
+          type: string
+          title: Generated At
+        entries:
+          items:
+            $ref: '#/components/schemas/CompareEntry'
+          type: array
+          title: Entries
+        winner:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Winner
+        rationale:
+          type: string
+          title: Rationale
+      type: object
+      required:
+      - generated_at
+      - entries
+      - rationale
+      title: CompareResponse
     CompareEntry:
       properties:
         address:
@@ -202,51 +238,12 @@ components:
       - address
       title: CompareEntry
       description: TrustReport-like summary of one address in a comparison.
-    ValidationError:
+    HTTPValidationError:
       properties:
-        loc:
+        detail:
           items:
-            anyOf:
-            - type: string
-            - type: integer
+            $ref: '#/components/schemas/ValidationError'
           type: array
-          title: Location
-        msg:
-          type: string
-          title: Message
-        type:
-          type: string
-          title: Error Type
+          title: Detail
       type: object
-      required:
-      - loc
-      - msg
-      - type
-      title: ValidationError
-    CompareResponse:
-      properties:
-        generated_at:
-          type: string
-          title: Generated At
-        entries:
-          items:
-            $ref: '#/components/schemas/CompareEntry'
-          type: array
-          title: Entries
-        winner:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Winner
-        rationale:
-          type: string
-          title: Rationale
-      type: object
-      required:
-      - generated_at
-      - entries
-      - rationale
-      title: CompareResponse
-x-refined-from:
-- gonna-bond-legit-openapi-original.json
-- gonna-bond-legit-openapi.yml
+      title: HTTPValidationError
