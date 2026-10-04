@@ -271,6 +271,8 @@ apis:
   humanURL: https://legit.gonna.bond/docs
   baseURL: https://legit.gonna.bond
   tags:
+  - Leaderboards
+  tags_raw:
   - Leaderboard
   properties:
   - type: OpenAPI
@@ -291,6 +293,8 @@ apis:
   humanURL: https://legit.gonna.bond/docs
   baseURL: https://legit.gonna.bond
   tags:
+  - Merchants
+  tags_raw:
   - Merchant
   properties:
   - type: OpenAPI
