@@ -83,62 +83,6 @@ paths:
       - Receipts
 components:
   schemas:
-    ReceiptEntry:
-      properties:
-        txid:
-          type: string
-          title: Txid
-        payer:
-          type: string
-          title: Payer
-        amount_usd:
-          type: number
-          title: Amount Usd
-        ts:
-          type: string
-          title: Ts
-        network:
-          type: string
-          title: Network
-      type: object
-      required:
-      - txid
-      - payer
-      - amount_usd
-      - ts
-      - network
-      title: ReceiptEntry
-      description: 'Wave 46 (L''Arbitro Verificato): one on-chain payment receipt.
-
-
-        A real settlement observed on a public chain indexer: the payer, the
-
-        amount in USD (amount_micro / 1e6), the naive-UTC timestamp, the
-
-        network slug and the on-chain transaction id as evidence. Never
-
-        fabricated: only rows the indexer worker''s chain-receipts pass wrote.'
-    ValidationError:
-      properties:
-        loc:
-          items:
-            anyOf:
-            - type: string
-            - type: integer
-          type: array
-          title: Location
-        msg:
-          type: string
-          title: Message
-        type:
-          type: string
-          title: Error Type
-      type: object
-      required:
-      - loc
-      - msg
-      - type
-      title: ValidationError
     ReceiptsResponse:
       properties:
         address:
@@ -201,6 +145,62 @@ components:
         always cover the full 30-day window. An empty window is an honest
 
         empty answer (total_receipts 0, receipts []), never invented rows.'
+    ValidationError:
+      properties:
+        loc:
+          items:
+            anyOf:
+            - type: string
+            - type: integer
+          type: array
+          title: Location
+        msg:
+          type: string
+          title: Message
+        type:
+          type: string
+          title: Error Type
+      type: object
+      required:
+      - loc
+      - msg
+      - type
+      title: ValidationError
+    ReceiptEntry:
+      properties:
+        txid:
+          type: string
+          title: Txid
+        payer:
+          type: string
+          title: Payer
+        amount_usd:
+          type: number
+          title: Amount Usd
+        ts:
+          type: string
+          title: Ts
+        network:
+          type: string
+          title: Network
+      type: object
+      required:
+      - txid
+      - payer
+      - amount_usd
+      - ts
+      - network
+      title: ReceiptEntry
+      description: 'Wave 46 (L''Arbitro Verificato): one on-chain payment receipt.
+
+
+        A real settlement observed on a public chain indexer: the payer, the
+
+        amount in USD (amount_micro / 1e6), the naive-UTC timestamp, the
+
+        network slug and the on-chain transaction id as evidence. Never
+
+        fabricated: only rows the indexer worker''s chain-receipts pass wrote.'
     HTTPValidationError:
       properties:
         detail:

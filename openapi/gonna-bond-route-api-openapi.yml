@@ -45,53 +45,6 @@ paths:
       - Route
 components:
   schemas:
-    RouteResponse:
-      properties:
-        query:
-          type: string
-          title: Query
-        chosen:
-          anyOf:
-          - $ref: '#/components/schemas/LeaderboardEntry'
-          - type: 'null'
-        alternatives:
-          items:
-            $ref: '#/components/schemas/LeaderboardEntry'
-          type: array
-          title: Alternatives
-        payment_hint:
-          type: object
-          title: Payment Hint
-        demo:
-          type: boolean
-          title: Demo
-          default: false
-      type: object
-      required:
-      - query
-      - payment_hint
-      title: RouteResponse
-    ValidationError:
-      properties:
-        loc:
-          items:
-            anyOf:
-            - type: string
-            - type: integer
-          type: array
-          title: Location
-        msg:
-          type: string
-          title: Message
-        type:
-          type: string
-          title: Error Type
-      type: object
-      required:
-      - loc
-      - msg
-      - type
-      title: ValidationError
     LeaderboardEntry:
       properties:
         rank:
@@ -241,6 +194,53 @@ components:
       - sample_size
       - network
       title: LeaderboardEntry
+    ValidationError:
+      properties:
+        loc:
+          items:
+            anyOf:
+            - type: string
+            - type: integer
+          type: array
+          title: Location
+        msg:
+          type: string
+          title: Message
+        type:
+          type: string
+          title: Error Type
+      type: object
+      required:
+      - loc
+      - msg
+      - type
+      title: ValidationError
+    RouteResponse:
+      properties:
+        query:
+          type: string
+          title: Query
+        chosen:
+          anyOf:
+          - $ref: '#/components/schemas/LeaderboardEntry'
+          - type: 'null'
+        alternatives:
+          items:
+            $ref: '#/components/schemas/LeaderboardEntry'
+          type: array
+          title: Alternatives
+        payment_hint:
+          type: object
+          title: Payment Hint
+        demo:
+          type: boolean
+          title: Demo
+          default: false
+      type: object
+      required:
+      - query
+      - payment_hint
+      title: RouteResponse
     HTTPValidationError:
       properties:
         detail:

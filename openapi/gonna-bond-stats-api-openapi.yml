@@ -32,6 +32,38 @@ paths:
       - Stats
 components:
   schemas:
+    Stats:
+      properties:
+        merchants:
+          type: integer
+          title: Merchants
+        merchants_testnet:
+          type: integer
+          title: Merchants Testnet
+          default: 0
+        merchants_mainnet:
+          type: integer
+          title: Merchants Mainnet
+          default: 0
+        merchants_active:
+          type: integer
+          title: Merchants Active
+          default: 0
+        measurements:
+          type: integer
+          title: Measurements
+        avg_score:
+          type: number
+          title: Avg Score
+        storage:
+          $ref: '#/components/schemas/StorageInfo'
+      type: object
+      required:
+      - merchants
+      - measurements
+      - avg_score
+      - storage
+      title: Stats
     StorageInfo:
       properties:
         path:
@@ -97,35 +129,3 @@ components:
         dbstat is available -- ``bytes`` alone under-reported the real
 
         on-disk cost per table by 1.4x-2.9x.'
-    Stats:
-      properties:
-        merchants:
-          type: integer
-          title: Merchants
-        merchants_testnet:
-          type: integer
-          title: Merchants Testnet
-          default: 0
-        merchants_mainnet:
-          type: integer
-          title: Merchants Mainnet
-          default: 0
-        merchants_active:
-          type: integer
-          title: Merchants Active
-          default: 0
-        measurements:
-          type: integer
-          title: Measurements
-        avg_score:
-          type: number
-          title: Avg Score
-        storage:
-          $ref: '#/components/schemas/StorageInfo'
-      type: object
-      required:
-      - merchants
-      - measurements
-      - avg_score
-      - storage
-      title: Stats

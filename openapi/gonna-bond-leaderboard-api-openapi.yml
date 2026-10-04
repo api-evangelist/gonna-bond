@@ -163,51 +163,6 @@ paths:
       - Leaderboard
 components:
   schemas:
-    Leaderboard:
-      properties:
-        generated_at:
-          type: string
-          title: Generated At
-        entries:
-          items:
-            $ref: '#/components/schemas/LeaderboardEntry'
-          type: array
-          title: Entries
-        networks:
-          items:
-            type: string
-          type: array
-          title: Networks
-        demo:
-          type: boolean
-          title: Demo
-          default: false
-      type: object
-      required:
-      - generated_at
-      - entries
-      title: Leaderboard
-    ValidationError:
-      properties:
-        loc:
-          items:
-            anyOf:
-            - type: string
-            - type: integer
-          type: array
-          title: Location
-        msg:
-          type: string
-          title: Message
-        type:
-          type: string
-          title: Error Type
-      type: object
-      required:
-      - loc
-      - msg
-      - type
-      title: ValidationError
     LeaderboardEntry:
       properties:
         rank:
@@ -357,6 +312,51 @@ components:
       - sample_size
       - network
       title: LeaderboardEntry
+    Leaderboard:
+      properties:
+        generated_at:
+          type: string
+          title: Generated At
+        entries:
+          items:
+            $ref: '#/components/schemas/LeaderboardEntry'
+          type: array
+          title: Entries
+        networks:
+          items:
+            type: string
+          type: array
+          title: Networks
+        demo:
+          type: boolean
+          title: Demo
+          default: false
+      type: object
+      required:
+      - generated_at
+      - entries
+      title: Leaderboard
+    ValidationError:
+      properties:
+        loc:
+          items:
+            anyOf:
+            - type: string
+            - type: integer
+          type: array
+          title: Location
+        msg:
+          type: string
+          title: Message
+        type:
+          type: string
+          title: Error Type
+      type: object
+      required:
+      - loc
+      - msg
+      - type
+      title: ValidationError
     HTTPValidationError:
       properties:
         detail:

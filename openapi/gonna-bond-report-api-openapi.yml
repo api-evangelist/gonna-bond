@@ -57,86 +57,6 @@ paths:
       - Report
 components:
   schemas:
-    ScorePoint:
-      properties:
-        ts:
-          type: string
-          title: Ts
-        score:
-          type: number
-          title: Score
-      type: object
-      required:
-      - ts
-      - score
-      title: ScorePoint
-      description: One historical score snapshot.
-    HTTPValidationError:
-      properties:
-        detail:
-          items:
-            $ref: '#/components/schemas/ValidationError'
-          type: array
-          title: Detail
-      type: object
-      title: HTTPValidationError
-    DeepReport:
-      properties:
-        address:
-          type: string
-          title: Address
-        name:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Name
-        score:
-          type: number
-          title: Score
-        grade:
-          type: string
-          title: Grade
-        breakdown:
-          $ref: '#/components/schemas/ScoreBreakdown'
-        history:
-          items:
-            $ref: '#/components/schemas/ScorePoint'
-          type: array
-          title: History
-        rank:
-          anyOf:
-          - type: integer
-          - type: 'null'
-          title: Rank
-        percentile:
-          type: number
-          title: Percentile
-          default: 0.0
-        networks_served:
-          items:
-            type: string
-          type: array
-          title: Networks Served
-        generated_at:
-          type: string
-          title: Generated At
-        measurement_window_days:
-          type: integer
-          title: Measurement Window Days
-          default: 30
-        demo:
-          type: boolean
-          title: Demo
-          default: false
-      type: object
-      required:
-      - address
-      - score
-      - grade
-      - breakdown
-      - generated_at
-      title: DeepReport
-      description: Deep trust report for one merchant (SPEC_V2 contract).
     ScoreBreakdown:
       properties:
         uptime_pct:
@@ -204,3 +124,83 @@ components:
       - msg
       - type
       title: ValidationError
+    DeepReport:
+      properties:
+        address:
+          type: string
+          title: Address
+        name:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Name
+        score:
+          type: number
+          title: Score
+        grade:
+          type: string
+          title: Grade
+        breakdown:
+          $ref: '#/components/schemas/ScoreBreakdown'
+        history:
+          items:
+            $ref: '#/components/schemas/ScorePoint'
+          type: array
+          title: History
+        rank:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Rank
+        percentile:
+          type: number
+          title: Percentile
+          default: 0.0
+        networks_served:
+          items:
+            type: string
+          type: array
+          title: Networks Served
+        generated_at:
+          type: string
+          title: Generated At
+        measurement_window_days:
+          type: integer
+          title: Measurement Window Days
+          default: 30
+        demo:
+          type: boolean
+          title: Demo
+          default: false
+      type: object
+      required:
+      - address
+      - score
+      - grade
+      - breakdown
+      - generated_at
+      title: DeepReport
+      description: Deep trust report for one merchant (SPEC_V2 contract).
+    ScorePoint:
+      properties:
+        ts:
+          type: string
+          title: Ts
+        score:
+          type: number
+          title: Score
+      type: object
+      required:
+      - ts
+      - score
+      title: ScorePoint
+      description: One historical score snapshot.
+    HTTPValidationError:
+      properties:
+        detail:
+          items:
+            $ref: '#/components/schemas/ValidationError'
+          type: array
+          title: Detail
+      type: object
+      title: HTTPValidationError

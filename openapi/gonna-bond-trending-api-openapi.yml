@@ -84,46 +84,6 @@ paths:
       - Trending
 components:
   schemas:
-    ValidationError:
-      properties:
-        loc:
-          items:
-            anyOf:
-            - type: string
-            - type: integer
-          type: array
-          title: Location
-        msg:
-          type: string
-          title: Message
-        type:
-          type: string
-          title: Error Type
-      type: object
-      required:
-      - loc
-      - msg
-      - type
-      title: ValidationError
-    Trending:
-      properties:
-        generated_at:
-          type: string
-          title: Generated At
-        trending:
-          items:
-            $ref: '#/components/schemas/LeaderboardEntry'
-          type: array
-          title: Trending
-        demo:
-          type: boolean
-          title: Demo
-          default: false
-      type: object
-      required:
-      - generated_at
-      - trending
-      title: Trending
     LeaderboardEntry:
       properties:
         rank:
@@ -273,6 +233,46 @@ components:
       - sample_size
       - network
       title: LeaderboardEntry
+    ValidationError:
+      properties:
+        loc:
+          items:
+            anyOf:
+            - type: string
+            - type: integer
+          type: array
+          title: Location
+        msg:
+          type: string
+          title: Message
+        type:
+          type: string
+          title: Error Type
+      type: object
+      required:
+      - loc
+      - msg
+      - type
+      title: ValidationError
+    Trending:
+      properties:
+        generated_at:
+          type: string
+          title: Generated At
+        trending:
+          items:
+            $ref: '#/components/schemas/LeaderboardEntry'
+          type: array
+          title: Trending
+        demo:
+          type: boolean
+          title: Demo
+          default: false
+      type: object
+      required:
+      - generated_at
+      - trending
+      title: Trending
     HTTPValidationError:
       properties:
         detail:

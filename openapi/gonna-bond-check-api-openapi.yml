@@ -64,52 +64,6 @@ components:
       - msg
       - type
       title: ValidationError
-    ScoreBreakdown:
-      properties:
-        uptime_pct:
-          type: number
-          title: Uptime Pct
-        latency_p50_ms:
-          type: number
-          title: Latency P50 Ms
-        success_rate:
-          type: number
-          title: Success Rate
-        coherence:
-          type: number
-          title: Coherence
-        sample_size:
-          type: integer
-          title: Sample Size
-        score:
-          type: number
-          title: Score
-        grade:
-          type: string
-          title: Grade
-        explanation:
-          items:
-            type: string
-          type: array
-          title: Explanation
-        adoption:
-          type: number
-          title: Adoption
-          default: 0.0
-        provisional:
-          type: boolean
-          title: Provisional
-          default: false
-      type: object
-      required:
-      - uptime_pct
-      - latency_p50_ms
-      - success_rate
-      - coherence
-      - sample_size
-      - score
-      - grade
-      title: ScoreBreakdown
     TrustReport:
       properties:
         address:
@@ -243,6 +197,52 @@ components:
       - breakdown
       - generated_at
       title: TrustReport
+    ScoreBreakdown:
+      properties:
+        uptime_pct:
+          type: number
+          title: Uptime Pct
+        latency_p50_ms:
+          type: number
+          title: Latency P50 Ms
+        success_rate:
+          type: number
+          title: Success Rate
+        coherence:
+          type: number
+          title: Coherence
+        sample_size:
+          type: integer
+          title: Sample Size
+        score:
+          type: number
+          title: Score
+        grade:
+          type: string
+          title: Grade
+        explanation:
+          items:
+            type: string
+          type: array
+          title: Explanation
+        adoption:
+          type: number
+          title: Adoption
+          default: 0.0
+        provisional:
+          type: boolean
+          title: Provisional
+          default: false
+      type: object
+      required:
+      - uptime_pct
+      - latency_p50_ms
+      - success_rate
+      - coherence
+      - sample_size
+      - score
+      - grade
+      title: ScoreBreakdown
     HTTPValidationError:
       properties:
         detail:

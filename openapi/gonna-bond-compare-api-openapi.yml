@@ -132,51 +132,6 @@ paths:
       - Compare
 components:
   schemas:
-    ValidationError:
-      properties:
-        loc:
-          items:
-            anyOf:
-            - type: string
-            - type: integer
-          type: array
-          title: Location
-        msg:
-          type: string
-          title: Message
-        type:
-          type: string
-          title: Error Type
-      type: object
-      required:
-      - loc
-      - msg
-      - type
-      title: ValidationError
-    CompareResponse:
-      properties:
-        generated_at:
-          type: string
-          title: Generated At
-        entries:
-          items:
-            $ref: '#/components/schemas/CompareEntry'
-          type: array
-          title: Entries
-        winner:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Winner
-        rationale:
-          type: string
-          title: Rationale
-      type: object
-      required:
-      - generated_at
-      - entries
-      - rationale
-      title: CompareResponse
     CompareEntry:
       properties:
         address:
@@ -238,6 +193,51 @@ components:
       - address
       title: CompareEntry
       description: TrustReport-like summary of one address in a comparison.
+    ValidationError:
+      properties:
+        loc:
+          items:
+            anyOf:
+            - type: string
+            - type: integer
+          type: array
+          title: Location
+        msg:
+          type: string
+          title: Message
+        type:
+          type: string
+          title: Error Type
+      type: object
+      required:
+      - loc
+      - msg
+      - type
+      title: ValidationError
+    CompareResponse:
+      properties:
+        generated_at:
+          type: string
+          title: Generated At
+        entries:
+          items:
+            $ref: '#/components/schemas/CompareEntry'
+          type: array
+          title: Entries
+        winner:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Winner
+        rationale:
+          type: string
+          title: Rationale
+      type: object
+      required:
+      - generated_at
+      - entries
+      - rationale
+      title: CompareResponse
     HTTPValidationError:
       properties:
         detail:
