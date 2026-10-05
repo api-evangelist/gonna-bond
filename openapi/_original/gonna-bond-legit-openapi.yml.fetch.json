@@ -1,0 +1,12 @@
+{
+ "url": "https://legit.gonna.bond/openapi.json",
+ "requested_url": "https://legit.gonna.bond/openapi.json",
+ "status": 200,
+ "content_type": "application/json",
+ "bytes": 59922,
+ "sha256": "b7ad0cdfb54264b9c73cf64345d8be58e7b674675318fa8c7f1476535e939123",
+ "fetched_at": "2026-10-04",
+ "fetched_by": "APIEvangelist-Harvest/1.0 (+https://apievangelist.com)",
+ "match": "equivalent",
+ "note": "Re-fetched from the provider by verify-openapi-sources.py; the provider's current document describes the same operations (Jaccard 1.0), but the bytes differ, so the archive is an earlier or reformatted copy."
+}
