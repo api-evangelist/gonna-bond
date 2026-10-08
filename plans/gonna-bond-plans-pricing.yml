@@ -66,3 +66,25 @@ plans:
   - {scope: deep-check, limit: 'up to 10 addresses per call'}
   - {scope: watch, limit: '7 or 30 days per sentinel; the 7-day tier costs the same as the 30-day'}
   - {scope: payment, limit: 'maxTimeoutSeconds 300 per offer'}
+x-canonical:
+  generated: '2026-10-08'
+  vocabulary: all/0-working/economics/plans-canonical.yml
+  models:
+  - free
+  - metered
+  units:
+  - request
+  plans:
+  - name: Free
+    access: free
+    model: free
+    model_how: derived
+    units: []
+    periods: []
+  - name: Pay per call (x402)
+    access: other
+    model: metered
+    model_how: stated
+    units:
+    - request
+    periods: []
