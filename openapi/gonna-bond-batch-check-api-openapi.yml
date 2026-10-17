@@ -75,15 +75,6 @@ paths:
       - Batch Check
 components:
   schemas:
-    HTTPValidationError:
-      properties:
-        detail:
-          items:
-            $ref: '#/components/schemas/ValidationError'
-          type: array
-          title: Detail
-      type: object
-      title: HTTPValidationError
     ValidationError:
       properties:
         loc:
@@ -105,6 +96,25 @@ components:
       - msg
       - type
       title: ValidationError
+    BatchReport:
+      properties:
+        generated_at:
+          type: string
+          title: Generated At
+        results:
+          items:
+            $ref: '#/components/schemas/TrustReportLite'
+          type: array
+          title: Results
+        demo:
+          type: boolean
+          title: Demo
+          default: false
+      type: object
+      required:
+      - generated_at
+      - results
+      title: BatchReport
     TrustReportLite:
       properties:
         address:
@@ -135,22 +145,12 @@ components:
       - uptime_pct
       title: TrustReportLite
       description: Compact per-address result inside a BatchReport.
-    BatchReport:
+    HTTPValidationError:
       properties:
-        generated_at:
-          type: string
-          title: Generated At
-        results:
+        detail:
           items:
-            $ref: '#/components/schemas/TrustReportLite'
+            $ref: '#/components/schemas/ValidationError'
           type: array
-          title: Results
-        demo:
-          type: boolean
-          title: Demo
-          default: false
+          title: Detail
       type: object
-      required:
-      - generated_at
-      - results
-      title: BatchReport
+      title: HTTPValidationError

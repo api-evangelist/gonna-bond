@@ -103,27 +103,20 @@ components:
       - score
       - grade
       title: ScoreBreakdown
-    ValidationError:
+    ScorePoint:
       properties:
-        loc:
-          items:
-            anyOf:
-            - type: string
-            - type: integer
-          type: array
-          title: Location
-        msg:
+        ts:
           type: string
-          title: Message
-        type:
-          type: string
-          title: Error Type
+          title: Ts
+        score:
+          type: number
+          title: Score
       type: object
       required:
-      - loc
-      - msg
-      - type
-      title: ValidationError
+      - ts
+      - score
+      title: ScorePoint
+      description: One historical score snapshot.
     DeepReport:
       properties:
         address:
@@ -181,20 +174,27 @@ components:
       - generated_at
       title: DeepReport
       description: Deep trust report for one merchant (SPEC_V2 contract).
-    ScorePoint:
+    ValidationError:
       properties:
-        ts:
+        loc:
+          items:
+            anyOf:
+            - type: string
+            - type: integer
+          type: array
+          title: Location
+        msg:
           type: string
-          title: Ts
-        score:
-          type: number
-          title: Score
+          title: Message
+        type:
+          type: string
+          title: Error Type
       type: object
       required:
-      - ts
-      - score
-      title: ScorePoint
-      description: One historical score snapshot.
+      - loc
+      - msg
+      - type
+      title: ValidationError
     HTTPValidationError:
       properties:
         detail:
