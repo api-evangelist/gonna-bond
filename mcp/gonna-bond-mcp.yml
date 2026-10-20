@@ -93,3 +93,17 @@ tool_quality:
   scored: false
   note: Facts from the saved tools/list capture (mcp_tool_quality.py); recorded, not scored. Checks learned
     from Glimind's agent-readiness audit.
+tools:
+- name: check_trust
+  description: 'Trust report for one merchant: 0-100 score, letter grade, uptime, median latency and a
+    plain-English explanation. Accepts Algorand, EVM or Solana addresses, or an https URL.'
+- name: compare_merchants
+  description: Head-to-head trust comparison of 2-5 merchant addresses. Returns the winner address and
+    a one-sentence rationale.
+- name: leaderboard
+  description: Top merchants by trust score, optionally filtered to one network (e.g. base-mainnet, algorand-mainnet,
+    solana-mainnet).
+- name: get_badge_url
+  description: Embeddable LEGIT trust-badge SVG URL for a merchant, plus a ready-to-paste HTML snippet
+    for the merchant's site.
+tools_count: 4
