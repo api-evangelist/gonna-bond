@@ -64,5 +64,148 @@
 > Full detail: **[Where this data comes from](https://apievangelist.com/about/where-our-data-comes-from)**
 <!-- API-EVANGELIST-PROVENANCE:END -->
 
-GONNA is a company surfaced via the API Evangelist harvest backlog (source: a2a-registry) and added to the network as a stub for full-pipeline profiling.
-- https://gonna.bond/
+GONNA is an Algorand-native meme-coin and games community ($GONNA, Algorand ASA 2582294183; the "GONNAVERSE" at gonna.bond) that builds and operates LEGIT, a trust oracle for the x402 agentic economy at legit.gonna.bond. LEGIT trust-checks any x402 merchant or agent address across Algorand, Base, Solana and 17 other chains before a payment is routed: grades (A+ to F) and scores (0-100) are built from live uptime, latency and payment-coherence probes rather than self-reported data. The surface is exposed three ways from one host: a 24-operation OpenAPI 3.1.0 REST contract at https://legit.gonna.bond/openapi.json (free reads; five verdict endpoints paid per call in USDC over x402, $0.004 on Algorand / $0.005 on Base, no accounts or API keys), a remote MCP server at https://legit.gonna.bond/mcp answering an anonymous tools/list with four tools, and an A2A-style agent card at /.well-known/agent.json and /.well-known/agent-card.json. The apex site gonna.bond is a JavaScript-rendered community page with no API surface of its own.
+
+**Areas:** Company · Agents · Agentic Commerce · x402 · Trust · Merchant Trust · MCP · A2A · Algorand · Blockchain · Payments · Agent-Native
+
+## GONNA on APIs.io
+
+Everything profiled for GONNA is published on APIs.io rather than in this repository. Start at the provider page — **[apis.io/providers/gonna-bond/](https://apis.io/providers/gonna-bond/)** — or go straight to one of the APIs or properties below.
+
+### APIs (23)
+
+- [LEGIT MCP Server](https://apis.io/apis/gonna-bond/legit-mcp-server/) — Remote Model Context Protocol server at https://legit.gonna.bond/mcp (stateless JSON-RPC 2.0 over HTTP POST; initialize reports protocolVersion 2024-11-05,…
+- [LEGIT A2A Agent Card](https://apis.io/apis/gonna-bond/legit-a2a-agent/) — Agent card served from https://legit.gonna.bond/.well-known/agent.json and, byte-identical, from the canonical /.well-known/agent-card.json: name LEGIT,…
+- [GONNA Arena API](https://apis.io/apis/gonna-bond/gonna-bond-arena-api/) — The Arena API from GONNA — 2 operation(s) for arena.
+- [GONNA Batch Check API](https://apis.io/apis/gonna-bond/gonna-bond-batch-check-api/) — The Batch Check API from GONNA — 1 operation(s) for batch check.
+- [GONNA Chain Logos API](https://apis.io/apis/gonna-bond/gonna-bond-chain-logos-api/) — The Chain Logos API from GONNA — 1 operation(s) for chain logos.
+- [GONNA Check API](https://apis.io/apis/gonna-bond/gonna-bond-check-api/) — The Check API from GONNA — 1 operation(s) for check.
+- [GONNA Compare API](https://apis.io/apis/gonna-bond/gonna-bond-compare-api/) — The Compare API from GONNA — 1 operation(s) for compare.
+- [GONNA Deep Check API](https://apis.io/apis/gonna-bond/gonna-bond-deep-check-api/) — The Deep Check API from GONNA — 1 operation(s) for deep check.
+- [GONNA Health API](https://apis.io/apis/gonna-bond/gonna-bond-health-api/) — The Health API from GONNA — 1 operation(s) for health.
+- [GONNA History API](https://apis.io/apis/gonna-bond/gonna-bond-history-api/) — The History API from GONNA — 1 operation(s) for history.
+- [GONNA Leaderboard API](https://apis.io/apis/gonna-bond/gonna-bond-leaderboard-api/) — The Leaderboard API from GONNA — 1 operation(s) for leaderboard.
+- [GONNA Merchant API](https://apis.io/apis/gonna-bond/gonna-bond-merchant-api/) — The Merchant API from GONNA — 1 operation(s) for merchant.
+- [GONNA Networks API](https://apis.io/apis/gonna-bond/gonna-bond-networks-api/) — The Networks API from GONNA — 1 operation(s) for networks.
+- [GONNA Pulse API](https://apis.io/apis/gonna-bond/gonna-bond-pulse-api/) — The Pulse API from GONNA — 1 operation(s) for pulse.
+- [GONNA Receipts API](https://apis.io/apis/gonna-bond/gonna-bond-receipts-api/) — The Receipts API from GONNA — 1 operation(s) for receipts.
+- [GONNA Referee API](https://apis.io/apis/gonna-bond/gonna-bond-referee-api/) — The Referee API from GONNA — 2 operation(s) for referee.
+- [GONNA Report API](https://apis.io/apis/gonna-bond/gonna-bond-report-api/) — The Report API from GONNA — 1 operation(s) for report.
+- [GONNA Route API](https://apis.io/apis/gonna-bond/gonna-bond-route-api/) — The Route API from GONNA — 1 operation(s) for route.
+- [GONNA Stats API](https://apis.io/apis/gonna-bond/gonna-bond-stats-api/) — The Stats API from GONNA — 1 operation(s) for stats.
+- [GONNA Trending API](https://apis.io/apis/gonna-bond/gonna-bond-trending-api/) — The Trending API from GONNA — 1 operation(s) for trending.
+- [GONNA Watch API](https://apis.io/apis/gonna-bond/gonna-bond-watch-api/) — The Watch API from GONNA — 1 operation(s) for watch.
+- [GONNA Watches API](https://apis.io/apis/gonna-bond/gonna-bond-watches-api/) — The Watches API from GONNA — 2 operation(s) for watches.
+- [GONNA .well Known API](https://apis.io/apis/gonna-bond/gonna-bond-well-known-api/) — The .well Known API from GONNA — 1 operation(s) for .well known.
+
+### Published properties
+
+Each property below is a page on APIs.io carrying the machine-readable artifact and what it says.
+
+#### AsyncAPI (1)
+
+Event-driven and webhook contracts.
+
+- [Gonna Bond Watch Webhooks](https://apis.io/asyncapis/gonna-bond/gonna-bond-watch-webhooks/)
+
+#### MCP servers (1)
+
+Model Context Protocol servers that expose the API to agents.
+
+- [gonna-bond-mcp.yml](https://apis.io/servers/gonna-bond/gonna-bond-mcp-yml/)
+
+#### Agentic access (1)
+
+Which operations an agent can call, which act, and which need a human in the loop.
+
+- [Gonna Bond Agentic Access](https://apis.io/agentic-access/gonna-bond/gonna-bond-agentic-access/)
+
+#### Overlays (1)
+
+OpenAPI overlays, including conversational phrasing for each operation.
+
+- [Gonna Bond Legit Overlay](https://apis.io/overlays/gonna-bond/gonna-bond-legit-overlay/)
+
+#### Security (3)
+
+Authentication, trust centre, and vulnerability disclosure.
+
+- [Gonna Bond Authentication](https://apis.io/security/gonna-bond/gonna-bond-authentication/)
+- [Gonna Bond Domain Security](https://apis.io/security/gonna-bond/gonna-bond-domain-security/)
+- [Gonna Bond Vulnerability Disclosure](https://apis.io/security/gonna-bond/gonna-bond-vulnerability-disclosure/)
+
+#### Plans and pricing (1)
+
+Published plans, tiers and prices.
+
+- [Gonna Bond Plans Pricing](https://apis.io/plans/gonna-bond/gonna-bond-plans-pricing/)
+
+#### Rate limits (1)
+
+Published request limits.
+
+- [Gonna Bond Rate Limits](https://apis.io/rate-limits/gonna-bond/gonna-bond-rate-limits/)
+
+## Where to find this API
+
+Links to the company's own pages. This repository publishes no copy of their specifications — the canonical document is theirs and lives at the URLs below.
+
+- [Website](https://gonna.bond/)
+- [Documentation](https://legit.gonna.bond/docs)
+- [API reference](https://legit.gonna.bond/openapi.json)
+- [Pricing](https://legit.gonna.bond/.well-known/legit)
+
+## API Evangelist rating
+
+**Kin Score 38.8** — thin · rubric 0.25.0 · scored 2026-10-23
+
+| Facet | Score |
+|---|---|
+| Discoverability | 75.0 |
+| Contract quality | 49.8 |
+| Contract governance | 18.2 |
+| Operational transparency | 18.4 |
+| Developer ergonomics | 42.3 |
+| Access clarity | 31.6 |
+
+**Agent readiness 39.8** — agent-ready (gated down from agent-native)
+
+| Agent-readiness dimension | Result |
+|---|---|
+| Spec Presence | yes |
+| Agentic Access | derived (partial credit) |
+| Reversibility Documented | — |
+| MCP Server | documented (partial credit) |
+| Auth Clarity | bearer (partial credit) |
+| Idempotency | — |
+| Error Semantics | verified |
+| OpenAPI Examples | partial |
+| Rate Limit Signal | documented (partial credit) |
+| Event Surface Described | yes |
+| Agent Skills | derived (partial credit) |
+| Well Known Catalog | — |
+| Consent Identity | — |
+| Agent Card | flavored (partial credit) |
+| Dry Run Mode | — |
+| Delegated Identity | — |
+| Protected Resource Metadata | — |
+| Dynamic Client Registration | — |
+| Agentic Commerce | — |
+| Pagination Ratio | partial |
+| Operation Distinctiveness | distinct |
+
+**Regulatory alignment 20.5** — Payments
+
+The rubric is published at [github.com/api-evangelist/kin-score](https://github.com/api-evangelist/kin-score). The per-check breakdown behind these numbers — which checks were earned, partial or missed — along with score history and how this provider compares to its peers, is available at [apis.io/providers/gonna-bond/](https://apis.io/providers/gonna-bond/).
+
+## How this profile is made
+
+API Evangelist profiles a company's public API surface the way a developer would find it: the website, developer portal and documentation, the specifications it publishes, its public repositories, and its pricing, status and changelog pages. From that it derives the properties above — contracts split per API, workflows, schemas, collections, governance rules, plans and rate limits — and scores them against the published [Kin Score rubric](https://github.com/api-evangelist/kin-score).
+
+The artifacts are published on [APIs.io](https://apis.io), not in this repository. This repository is the public record for GONNA: the place to say something is wrong, missing or out of date, and to ask for a re-score or a removal.
+
+## Open an issue
+
+- **Something about this listing** — a wrong description, a missing API, a stale artifact or a question about the rating: [open an issue on this repository](https://github.com/api-evangelist/gonna-bond/issues/new).
+- **A new API, or one that is not in the catalog yet** — [submit it on APIs.io](https://apis.io/add/).
+- **Anything else** — [the APIs.io inbox](https://github.com/api-search/inbox/issues/new) or [info@apievangelist.com](mailto:info@apievangelist.com).
